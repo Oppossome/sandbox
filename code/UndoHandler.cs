@@ -51,7 +51,10 @@ public static class UndoHandler
 	private static List<UndoEntry> GetPlayerEntry( Client client )
 	{
 		if ( !Props.ContainsKey( client.UserId ) )
+		{
+			Notifications.AddNotification( To.Single( client ), "💡", "Want to undo? bind z undo", 5 );
 			Props[client.UserId] = new();
+		}
 
 		return Props[client.UserId];
 	}
