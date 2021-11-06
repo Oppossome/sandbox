@@ -75,6 +75,7 @@
 				light.SetModel( Model );
 				light.SetupPhysicsFromModel( PhysicsMotionType.Dynamic, false );
 				light.Position = tr.EndPos + -light.CollisionBounds.Center + tr.Normal * light.CollisionBounds.Size * 0.5f;
+				UndoHandler.Register( Owner, light );
 
 				if ( !useRope )
 					return;

@@ -80,6 +80,8 @@
 				ent.PhysicsBody.GravityScale = -0.2f;
 				ent.RenderColor = Tint;
 
+				UndoHandler.Register( Owner, ent );
+
 				Tint = Color.Random;
 
 				if ( !useRope )

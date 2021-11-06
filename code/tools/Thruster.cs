@@ -83,6 +83,7 @@
 				}
 
 				ent.SetModel( "models/thruster/thrusterprojector.vmdl" );
+				UndoHandler.Register( Owner, ent );
 			}
 		}
 	}

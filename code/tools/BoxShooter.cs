@@ -32,6 +32,7 @@
 
 			ent.SetModel( "models/citizen_props/crate01.vmdl" );
 			ent.Velocity = Owner.EyeRot.Forward * 1000;
+			UndoHandler.Register( Owner, ent );
 		}
 	}
 }

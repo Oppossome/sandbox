@@ -43,6 +43,8 @@ partial class SandboxGame : Game
 		ent.Rotation = Rotation.From( new Angles( 0, owner.EyeRot.Angles().yaw, 0 ) ) * Rotation.FromAxis( Vector3.Up, 180 );
 		ent.SetModel( modelname );
 		ent.Position = tr.EndPos - Vector3.Up * ent.CollisionBounds.Mins.z;
+
+		UndoHandler.Register( owner, ent );
 	}
 
 	[ServerCmd( "spawn_entity" )]
@@ -73,6 +75,7 @@ partial class SandboxGame : Game
 
 		ent.Position = tr.EndPos;
 		ent.Rotation = Rotation.From( new Angles( 0, owner.EyeRot.Angles().yaw, 0 ) );
+		UndoHandler.Register(owner, ent );
 
 		//Log.Info( $"ent: {ent}" );
 	}
