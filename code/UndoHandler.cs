@@ -15,18 +15,21 @@ public static class UndoHandler
 {
 	public static Dictionary<int, List<UndoEntry>> Props = new();
 
-	public static void DoUndo(int userId, int count = 1 )
+	public static int DoUndo(int userId, int count = 1 )
 	{
 		var userProps = Props.GetValueOrDefault( userId );
+		int total = 0;
 
-		while(count > 0 && userProps.Count > 0 )
+		while(total < count && userProps.Count > 0 )
 		{
 			UndoEntry entry = userProps[userProps.Count - 1];
 			userProps.Remove( entry );
 
 			if ( AttemptUndo( entry ) )
-				count--;
+				total++;
 		}
+
+		return total;
 	}
 
 	private static bool AttemptUndo(UndoEntry entry)
@@ -81,7 +84,13 @@ public static class UndoHandler
 		if ( ConsoleSystem.Caller is not Client cl )
 			return;
 
-		DoUndo( cl.UserId, amnt );
+		int undone = DoUndo( cl.UserId, amnt );
+
+		if ( undone == 0 )
+			return;
+
+		string prefix = undone + " prop" + (undone == 1 ? "" : "s");
+		Notifications.AddNotification( To.Single( cl ), "💡",  prefix + " undone", 1 );
 	}
 
 	[AdminCmd("undo_everyone")]
