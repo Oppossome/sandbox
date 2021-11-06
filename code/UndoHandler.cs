@@ -20,6 +20,9 @@ public static class UndoHandler
 		var userProps = Props.GetValueOrDefault( userId );
 		int total = 0;
 
+		if ( count == -1 )
+			count = int.MaxValue;
+
 		while(total < count && userProps.Count > 0 )
 		{
 			UndoEntry entry = userProps[userProps.Count - 1];
@@ -96,7 +99,12 @@ public static class UndoHandler
 	[AdminCmd("undo_everyone")]
 	public static void UndoEveryoneCMD()
 	{
-		foreach( int id in Props.Keys )
-			DoUndo( id, int.MaxValue );
+		if ( ConsoleSystem.Caller is not Client cl )
+			return;
+
+		Notifications.AddNotification( To.Single( cl ), "💡", "All ents undone", 1 );
+
+		foreach ( int id in Props.Keys )
+			DoUndo( id, -1 );
 	}
 }
