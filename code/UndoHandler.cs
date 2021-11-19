@@ -13,11 +13,12 @@ public struct UndoEntry
 
 public static class UndoHandler
 {
-	public static Dictionary<int, List<UndoEntry>> Props = new();
+	public static Dictionary<long, List<UndoEntry>> Props = new();
 
-	public static int DoUndo(int userId, int count = 1 )
+	public static int DoUndo(long userId, int count = 1 )
 	{
 		var userProps = Props.GetValueOrDefault( userId );
+		if ( userProps == null ) return 0;
 		int total = 0;
 
 		if ( count == -1 )
@@ -56,13 +57,13 @@ public static class UndoHandler
 
 	private static List<UndoEntry> GetPlayerEntry( Client client )
 	{
-		if ( !Props.ContainsKey( client.UserId ) )
+		if ( !Props.ContainsKey( client.PlayerId ) )
 		{
 			Notifications.AddNotification( To.Single( client ), "💡", "Want to undo? bind z undo", 5 );
-			Props[client.UserId] = new();
+			Props[client.PlayerId] = new();
 		}
 
-		return Props[client.UserId];
+		return Props[client.PlayerId];
 	}
 
 	public static void Register( Entity player, Entity prop )
@@ -87,7 +88,7 @@ public static class UndoHandler
 		if ( ConsoleSystem.Caller is not Client cl )
 			return;
 
-		int undone = DoUndo( cl.UserId, amnt );
+		int undone = DoUndo( cl.PlayerId, amnt );
 
 		if ( undone == 0 )
 			return;
@@ -104,7 +105,7 @@ public static class UndoHandler
 
 		Notifications.AddNotification( To.Single( cl ), "💡", "All ents undone", 1 );
 
-		foreach ( int id in Props.Keys )
+		foreach ( long id in Props.Keys )
 			DoUndo( id, -1 );
 	}
 }
