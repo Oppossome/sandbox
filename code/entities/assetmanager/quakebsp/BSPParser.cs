@@ -152,11 +152,9 @@ namespace assetmanager.quakebsp
 					else faceEdges.Add( Edges[ -edge ].Inverse() );
 				}
 
-				BSPTexture texInfo = Textures[BitConverter.ToUInt16( faceBytes, 10 )];
-
 				Faces.Add( new()
 				{
-					TextureInfo = texInfo,
+					TextureInfo = Textures[BitConverter.ToUInt16( faceBytes, start + 10 )],
 					Edges = faceEdges,
 					Plane = plane
 				} );
@@ -191,11 +189,10 @@ namespace assetmanager.quakebsp
 					VAxis = ReadVector( texBytes, start + 16 ),
 					VOffset = BitConverter.ToSingle( texBytes, start + 28 ),
 
-					TextureName = Encoding.ASCII.GetString(texBytes, start + 40, 32)
+					TextureName = Encoding.ASCII.GetString(texBytes, start + 40, 32).Trim( '\0' )
 				} );
 			}
 		}
-
 
 		public Vector3 ReadVector(byte[] bytes, int start)
 		{
@@ -211,20 +208,21 @@ namespace assetmanager.quakebsp
 		--------------------------------- */
 
 		[AssetProvider( Type = typeof( Model ) )]
-		public static Model ParseBSP(string filePath)
+		public static Model ParseBSP( string filePath )
 		{
 			if ( PAKParser.GetFile( filePath ) is not byte[] fileBytes )
 				return null;
 
+			Dictionary<string, List<Vertex>> meshVertices = new();
 			BSPParser parsed = new( fileBytes );
-			ModelBuilder builder = new();
-
 			List<Vector3> collVertices = new();
 
 			foreach(BSPFace face in parsed.Faces )
 			{
-				Mesh mesh = new Mesh(Material.Load( "materials/dev/dev_measuregeneric01b.vmat" ) ); // TODO: Assets.Get<Material>( face.TextureInfo.TextureName );
-				List<Vertex> meshVerts = new();
+				string textureName = face.TextureInfo.TextureName;
+				if ( textureName == "e1u1/trigger" || textureName.Contains("sky") ) continue;
+
+				List<Vertex> meshVerts = meshVertices.GetOrCreate( textureName );
 				var edges = face.Edges;
 
 				for ( int i = 1; i < edges.Count - 1; i++ )
@@ -237,9 +235,15 @@ namespace assetmanager.quakebsp
 						collVertices.Add( vert );
 					}
 				}
+			}
 
-				mesh.CreateVertexBuffer( meshVerts.Count, Vertex.Layout, meshVerts );
-				if(Host.IsClient) builder.AddMesh( mesh );
+			ModelBuilder builder = new();
+
+			foreach ( var kvp in meshVertices )
+			{
+				Mesh mesh = new( Assets.Get<Material>( kvp.Key ) );
+				mesh.CreateVertexBuffer( kvp.Value.Count, Vertex.Layout, kvp.Value );
+				builder.AddMesh( mesh );
 			}
 
 			builder.AddCollisionMesh(collVertices.ToArray(), Enumerable.Range(0, collVertices.Count() - 1).ToArray() );
@@ -251,15 +255,16 @@ namespace assetmanager.quakebsp
 			Vector3 rot = Rotation.LookAt( face.Plane.Normal ).Up;
 
 			var texInfo = face.TextureInfo;
-			float uAxis = pos.x * texInfo.UAxis.x + pos.y * texInfo.UAxis.y + pos.z * texInfo.UAxis.z + texInfo.UOffset;
-			float vAxis = pos.x * texInfo.VAxis.x + pos.y * texInfo.VAxis.y + pos.z * texInfo.VAxis.z + texInfo.VOffset;
+			Vector2 texSize = WALParser.GetDimensions(texInfo.TextureName);
+			float uAxis = pos.x*texInfo.UAxis.x + pos.y*texInfo.UAxis.y + pos.z*texInfo.UAxis.z + texInfo.UOffset;
+			float vAxis = pos.x*texInfo.VAxis.x + pos.y*texInfo.VAxis.y + pos.z*texInfo.VAxis.z + texInfo.VOffset;
 
 			return new Vertex()
 			{
 				Position = pos,
 				Normal = face.Plane.Normal,
 				Tangent = new Vector4( rot.x, rot.y, rot.z, -1 ),
-				TexCoord0 = new Vector2( uAxis, vAxis ),
+				TexCoord0 = new Vector2( uAxis, vAxis ) / texSize,
 				Color = Color.White
 			};
 		}
