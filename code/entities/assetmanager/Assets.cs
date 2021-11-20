@@ -46,5 +46,12 @@ namespace assetmanager
 		[AssetProvider( Type = typeof( Material ), Fallback = true )]
 		public static Material FallbackMaterial( string filePath ) 
 			=> Material.Load( "materials/error.vmat" );
+
+		[Event.Entity.PostSpawn]
+		public static void DoLoad()
+		{
+			Assets.Get<Material>( "" );
+			Assets.Get<Model>( "" );
+		}
 	}
 }
