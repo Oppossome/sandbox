@@ -28,7 +28,7 @@ namespace assetmanager
 			}
 
 			AssetProvider fallbackProvider = attr.Where(x => x.Fallback ).FirstOrDefault();
-			return (T)fallbackProvider.InvokeStatic();
+			return (T)fallbackProvider.InvokeStatic( filePath );
 		}
 
 		[AssetProvider( Type = typeof( Model ) )]
