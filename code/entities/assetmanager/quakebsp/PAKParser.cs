@@ -23,10 +23,10 @@ namespace assetmanager.quakebsp
 			for ( int start = tblOffset; start < tblOffset + tblLength; start += 64 )
 			{
 				string name = Encoding.ASCII.GetString( fileBytes, start, 56 ).Trim( '\0' );
-				int fileOffset = BitConverter.ToInt32( fileBytes, start + 56 );
-				int fileLength = BitConverter.ToInt32( fileBytes, start + 60 );
 				if ( Files.ContainsKey( name ) ) continue;
 
+				int fileOffset = BitConverter.ToInt32( fileBytes, start + 56 );
+				int fileLength = BitConverter.ToInt32( fileBytes, start + 60 );
 				Files.Add( name, fileBytes.Skip( fileOffset ).Take( fileLength ).ToArray() );
 			}
 		}
@@ -46,7 +46,19 @@ namespace assetmanager.quakebsp
 			foreach (string fileName in FileSystem.Data.FindFile( "quake2", "*.pak", true )) {
 				byte[] fileBytes = FileSystem.Data.ReadAllBytes( "quake2/" + fileName ).ToArray();
 				Parse( fileBytes );
+			}
 
+			RegisterFiletype( "bsp" );
+			RegisterFiletype( "wal" );
+		}
+
+		private static void RegisterFiletype(string filetype )
+		{
+			foreach ( string fileName in FileSystem.Data.FindFile( "quake2", $"*.{filetype}", true ) )
+			{
+				if ( Files.ContainsKey( fileName ) ) continue;
+				byte[] fileBytes = FileSystem.Data.ReadAllBytes( "quake2/" + fileName ).ToArray();
+				Files.Add( fileName, fileBytes );
 			}
 		}
 	}
