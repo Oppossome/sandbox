@@ -22,7 +22,7 @@ namespace assetmanager
 
 			LastModel = Model;
 			SetModel( Assets.Get<Model>( Model ) );
-			SetupPhysicsFromModel( PhysicsMotionType.Static );
+			SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 		}
 
 		[ServerCmd]
