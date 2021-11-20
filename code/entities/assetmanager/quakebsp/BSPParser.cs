@@ -220,7 +220,7 @@ namespace assetmanager.quakebsp
 			foreach(BSPFace face in parsed.Faces )
 			{
 				string textureName = face.TextureInfo.TextureName;
-				if ( textureName == "e1u1/trigger" || textureName.Contains("sky") ) continue;
+				if ( textureName.Contains("trigger") ) continue; // So it doesn't collide or render
 
 				List<Vertex> meshVerts = meshVertices.GetOrCreate( textureName );
 				var edges = face.Edges;
@@ -241,6 +241,8 @@ namespace assetmanager.quakebsp
 
 			foreach ( var kvp in meshVertices )
 			{
+				if ( kvp.Key.Contains( "sky" ) ) continue; // So it collides but doesn't render
+
 				Mesh mesh = new( Assets.Get<Material>( kvp.Key ) );
 				mesh.CreateVertexBuffer( kvp.Value.Count, Vertex.Layout, kvp.Value );
 				builder.AddMesh( mesh );
