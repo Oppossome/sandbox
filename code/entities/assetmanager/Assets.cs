@@ -15,16 +15,26 @@ namespace assetmanager
 
 	public static class Assets 
 	{
-		static Dictionary<Type, Action> Fallbacks = new();
+		private static Dictionary<Type, Dictionary<string, Object>> Cache = new();
 
 		public static T Get<T>(string filePath) where T : Resource
 		{
+			if ( Cache.TryGetValue( typeof( T ), out var resourceCache ) )
+				if ( resourceCache.TryGetValue( filePath, out object result ) )
+					return (T)result;
+
 			var attr = Library.GetAttributes<AssetProvider>().Where( x => x.Type == typeof( T ) );
 
 			foreach ( AssetProvider aP in attr.Where( x => !x.Fallback ) )
 			{
 				T result = (T)aP.InvokeStatic( filePath );
-				if ( result != null ) return result;
+				if ( result == null ) continue;
+
+				if ( !Cache.ContainsKey( typeof( T ) ) ) 
+					Cache.Add( typeof( T ), new() );
+
+				Cache[typeof( T )][filePath] = result;
+				return result;
 			}
 
 			AssetProvider fallbackProvider = attr.Where(x => x.Fallback ).FirstOrDefault();
