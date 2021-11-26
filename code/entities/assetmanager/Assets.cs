@@ -10,16 +10,14 @@ namespace assetmanager
 	public class AssetProvider : LibraryMethod
 	{
 		public Type Type { get; set; }
+		public bool NoCache { get; set; }
 		public bool Fallback { get; set; }
 	}
 
 	public static class Assets 
 	{
 		private static Dictionary<Type, Dictionary<string, Object>> Cache = new();
-
-		[ClientVar( "asset_nocache" )]
-		public static bool NoCache { get; set; } = false;
-
+		
 		public static T Get<T>(string filePath) where T : Resource
 		{
 			if ( Cache.TryGetValue( typeof( T ), out var resourceCache ) )
@@ -33,13 +31,8 @@ namespace assetmanager
 				T result = (T)aP.InvokeStatic( filePath );
 				if ( result == null ) continue;
 
-				if ( !NoCache )
-				{
-					if ( !Cache.ContainsKey( typeof( T ) ) )
-						Cache.Add( typeof( T ), new() );
-
-					Cache[typeof( T )][filePath] = result;
-				}
+				if ( !aP.NoCache )
+					Cache.GetOrCreate( typeof( T ) )[filePath] = result;
 
 				return result;
 			}
