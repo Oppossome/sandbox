@@ -119,8 +119,8 @@ public class SpawnMenu : Panel
 	{
 		VirtualScrollPanel canvas = new();
 		canvas.Layout.AutoColumns = true;
-		canvas.Layout.ItemHeight = 160;
-		canvas.Layout.ItemWidth = 160;
+		canvas.Layout.ItemHeight = 150;
+		canvas.Layout.ItemWidth = 150;
 		canvas.AddClass( "canvas" );
 		return canvas;
 	}

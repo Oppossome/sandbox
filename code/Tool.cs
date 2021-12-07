@@ -1,5 +1,6 @@
 ﻿using Sandbox;
 using Sandbox.Tools;
+using Sandbox.UI;
 
 [Library( "weapon_tool", Title = "Toolgun" )]
 partial class Tool : Carriable
@@ -105,6 +106,11 @@ namespace Sandbox.Tools
 		public Player Owner { get; set; }
 
 		protected virtual float MaxTraceDistance => 10000.0f;
+
+		public virtual Panel MakeSettingsPanel()
+		{
+			return null;
+		}
 
 		public virtual void Activate()
 		{

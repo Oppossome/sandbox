@@ -36,6 +36,19 @@ public class SplitButton : Button
 		return this;
 	}
 
+
+	public SplitButton SetPanel(Panel panel)
+	{
+		if ( CategoryPanel != null ) CategoryPanel.Delete();
+		if ( panel == null ) return this;
+
+		CategoryPanel = panel;
+		Host.CategoryContent.AddChild( CategoryPanel );
+		CategoryPanel.Style.Display = DisplayMode.None;
+		if ( Host.CurrentButton == this ) SetActive();
+		return this;
+	}
+
 	public SplitButton SetActive()
 	{
 		Host.SetActiveButton( this );
@@ -55,7 +68,7 @@ public class SplitButton : Button
 			return CategoryPanel;
 		}
 
-		return null;
+		return CategoryPanel;
 	}
 
 	protected override void OnClick( MousePanelEvent e )

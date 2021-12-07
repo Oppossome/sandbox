@@ -13,6 +13,7 @@ public class ToolsMenu : TabSplit
 
 	public ToolsMenu()
 	{
+		StyleSheet.Load("/ui/spawnmenu/ToolsMenu.scss");
 		ToolList();
 	}
 
@@ -25,6 +26,7 @@ public class ToolsMenu : TabSplit
 		tabSplit.Register( "Tools" ).WithPanel( () =>
 		{
 			CategorySplit catSplit = new();
+
 			BindClass( "small", () => catSplit.CurrentButton is null || catSplit.CurrentButton.GetPanel() is null );
 
 			foreach ( var entry in Library.GetAllAttributes<BaseTool>() )
@@ -63,9 +65,13 @@ public class ToolsMenu : TabSplit
 	public void ToolSwitched( BaseTool tool )
 	{
 		var entry = Library.GetAttribute( tool.GetType() );
-
 		if ( ToolButtons.TryGetValue( entry.Name, out SplitButton tBtn ) )
-			tBtn.SetActive();
+		{
+			Panel sPanel = tool.MakeSettingsPanel();
+			Log.Info( sPanel );
+
+			tBtn.SetPanel( sPanel ).SetActive();
+		}
 	}
 }
 
