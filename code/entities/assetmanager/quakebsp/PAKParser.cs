@@ -52,6 +52,19 @@ namespace assetmanager.quakebsp
 			RegisterFiletype( "wal" );
 		}
 
+		[AssetListing(Title = "Quake 2")]
+		public static List<string> GetModels()
+		{
+			ParseFiles();
+			List<string> modelList = new();
+
+			foreach ( string key in Files.Keys )
+				if ( key.ToLower().EndsWith( ".bsp" ) )
+					modelList.Add( key );
+
+			return modelList;
+		}
+
 		private static void RegisterFiletype(string filetype )
 		{
 			foreach ( string fileName in FileSystem.Data.FindFile( "quake2", $"*.{filetype}", true ) )

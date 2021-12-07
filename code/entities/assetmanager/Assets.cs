@@ -7,6 +7,10 @@ using Sandbox;
 
 namespace assetmanager
 {
+	public class AssetListing : LibraryMethod
+	{
+	}
+
 	public class AssetProvider : LibraryMethod
 	{
 		public Type Type { get; set; }
@@ -41,6 +45,21 @@ namespace assetmanager
 			return (T)fallbackProvider.InvokeStatic( filePath );
 		}
 
+		public static Dictionary<string, List<string>> RegisteredModels()
+		{
+			var attr = Library.GetAttributes<AssetListing>();
+			Dictionary<string, List<string>> assetListing = new();
+
+			foreach ( AssetListing aL in attr )
+			{
+				var modelAssets = (List<string>)aL.InvokeStatic();
+				if ( modelAssets != null && modelAssets.Count != 0) 
+					assetListing[aL.Title] = modelAssets;
+			}
+
+			return assetListing;
+		}
+
 		[AssetProvider( Type = typeof( Model ) )]
 		public static Model DefaultModel( string filePath ) 
 			=> filePath.EndsWith( "vmdl" ) ? Model.Load( filePath ) : null;
@@ -56,12 +75,5 @@ namespace assetmanager
 		[AssetProvider( Type = typeof( Material ), Fallback = true )]
 		public static Material FallbackMaterial( string filePath ) 
 			=> Material.Load( "materials/error.vmat" );
-
-		[Event.Entity.PostSpawn]
-		public static void DoLoad()
-		{
-			Assets.Get<Material>( "" );
-			Assets.Get<Model>( "" );
-		}
 	}
 }

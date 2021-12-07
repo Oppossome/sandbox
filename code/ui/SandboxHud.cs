@@ -6,10 +6,17 @@ public partial class SandboxHud : HudEntity<RootPanel>
 {
 	public SandboxHud()
 	{
+		SetupHud();		
+	}
+
+	[Event.Hotload]
+	public void SetupHud()
+	{
 		if ( !IsClient )
 			return;
 
 		RootPanel.StyleSheet.Load( "/ui/SandboxHud.scss" );
+		RootPanel.DeleteChildren();
 
 		RootPanel.AddChild<NameTags>();
 		RootPanel.AddChild<CrosshairCanvas>();
@@ -23,4 +30,5 @@ public partial class SandboxHud : HudEntity<RootPanel>
 		RootPanel.AddChild<SpawnMenu>();
 		RootPanel.AddChild<Notifications>();
 	}
+
 }
