@@ -39,12 +39,14 @@ public class SpawnMenu : Panel
 			 {
 				 if ( entry.Title == "BaseTool" ) continue;
 
-
-				 catSplit.Register( entry.Title, Empty, () => //TODO: Display tool specific menu
+				 Button toolButton = catSplit.Register( entry.Title, Empty, () => //TODO: Display tool specific menu
 				  {
 					  ConsoleSystem.Run( "tool_current", entry.Name );
 					  ConsoleSystem.Run( "inventory_current", "weapon_tool" );
 				  } );
+
+				 if ( entry.Name == ConsoleSystem.GetValue( "tool_current" ) )
+					 toolButton.Click();
 			 }
 
 			 return catSplit;

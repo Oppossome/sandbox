@@ -17,7 +17,7 @@ public class SplitBase : Panel
 	public string CurrentCategory;
 	public Panel CurrentContent;
 
-	public void Register( string catName, Func<Panel> catBuilder, Action callback = null )
+	public Button Register( string catName, Func<Panel> catBuilder, Action callback = null )
 	{
 		Button catButton = CategoryList.Add.Button( catName, () =>
 		{
@@ -30,6 +30,8 @@ public class SplitBase : Panel
 
 		if ( CategoryList.ChildrenCount == 1 )
 			SwitchCategory( catName, catBuilder );
+
+		return catButton;
 	}
 
 	public void RegisterButton( string catName, Action callback = null )
