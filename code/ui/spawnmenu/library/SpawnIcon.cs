@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Sandbox;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
+using assetmanager;
 
 [UseTemplate]
 public class SpawnIcon : Panel
@@ -13,6 +14,7 @@ public class SpawnIcon : Panel
 	public Panel InnerPanel { get; set; }
 	public Panel IconPanel { get; set; }
 	public string IconText { get; set; }
+	ScenePanel scenePanel;
 	
 	public SpawnIcon( string iconName )
 	{
@@ -36,7 +38,7 @@ public class SpawnIcon : Panel
 
 	public SpawnIcon WithRenderedIcon( string modelPath )
 	{
-		Model renderModel = Model.Load( $"models/{modelPath}" );
+		Model renderModel = Assets.Get<Model>( $"models/{modelPath}" );
 
 		Vector3 maxs = renderModel.RenderBounds.Maxs;
 		float maxDist = Vector3.DistanceBetween( Vector3.Zero, maxs );
@@ -49,10 +51,9 @@ public class SpawnIcon : Panel
 		using (SceneWorld.SetCurrent( new SceneWorld() ) )
 		{
 			SceneObject.CreateModel( $"models/{modelPath}", Transform.Zero );
-			
-			var sP = IconPanel.Add.ScenePanel( SceneWorld.Current, camPos, camRot, 90, "renderedCam" );
-			sP.AmbientColor = Color.White * 1;
-			sP.RenderOnce = true;
+			scenePanel = IconPanel.Add.ScenePanel( SceneWorld.Current, camPos, camRot, 90, "renderedCam" );
+			scenePanel.AmbientColor = Color.White * 1;
+			scenePanel.RenderOnce = true;
 		}
 
 		IconPanel.AddClass( "noicon" );

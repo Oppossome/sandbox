@@ -49,6 +49,9 @@ partial class Tool : Carriable
 			CurrentTool.Parent = this;
 			CurrentTool.Owner = owner.Pawn as Player;
 			CurrentTool.Activate();
+
+			if ( Host.IsClient && owner == Local.Client)
+				Event.Run( "tool-switched", CurrentTool );
 		}
 	}
 

@@ -8,73 +8,33 @@ using Sandbox;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
 using Sandbox.UI.Tests;
-using Sandbox.Tools;
 using assetmanager;
 
 [UseTemplate]
 public class SpawnMenu : Panel
 {
 	public Panel SpawnPanel { get; set; }
-	public Panel ToolPanel { get; set; }
+	public ToolsMenu ToolPanel { get; set; }
 
 	public SpawnMenu()
 	{
 		this.BindClass( "hidden", () => !(Input.Down( InputButton.Menu ) || HasFocus) );
 		CreateSpawnMenu();
-		CreateToolMenu();
 	}
 
 	private Func<Panel> Empty = () => null;
-
-	private void CreateToolMenu()
-	{
-		var tabSplit = ToolPanel.AddChild<TabSplit>();
-
-		tabSplit.Register( "Tools", () =>
-		 {
-			 CategorySplit catSplit = new();
-			 ToolPanel.BindClass( "small", () => catSplit.CurrentContent is null ); // Shrink if no tool menu
-
-			 foreach ( var entry in Library.GetAllAttributes<BaseTool>() )
-			 {
-				 if ( entry.Title == "BaseTool" ) continue;
-
-				 Button toolButton = catSplit.Register( entry.Title, Empty, () => //TODO: Display tool specific menu
-				  {
-					  ConsoleSystem.Run( "tool_current", entry.Name );
-					  ConsoleSystem.Run( "inventory_current", "weapon_tool" );
-				  } );
-
-				 if ( entry.Name == ConsoleSystem.GetValue( "tool_current" ) )
-					 toolButton.Click();
-			 }
-
-			 return catSplit;
-		 } );
-
-		tabSplit.Register( "Utils", () =>
-		{
-			CategorySplit catSplit = new();
-
-			catSplit.RegisterButton( "Undo", () =>
-				ConsoleSystem.Run( "undo" ) );
-
-			catSplit.RegisterButton( "Undo All", () =>
-				ConsoleSystem.Run( "undo", -1 ) );
-
-			return catSplit;
-		} );
-	}
 
 	private void CreateSpawnMenu()
 	{
 		var tabSplit = SpawnPanel.AddChild<TabSplit>();
 
-		tabSplit.Register( "Props", () =>
+		// Prop Tab Creation
+
+		tabSplit.Register("Props").WithPanel( () =>
 		{
 			CategorySplit catSplit = new();
 
-			catSplit.Register( "Sandbox", () => {
+			catSplit.Register( "Sandbox" ).WithPanel( () => {
 				var scrollPanel = MakeScrollPanel();
 
 				scrollPanel.OnCreateCell = ( cell, data ) =>
@@ -101,11 +61,11 @@ public class SpawnMenu : Panel
 				}
 
 				return scrollPanel;
-			} );
+			} ).SetActive();
 
 			foreach ( var kvp in Assets.RegisteredModels() ) 
 			{
-				catSplit.Register( kvp.Key, () =>
+				catSplit.Register( kvp.Key ).WithPanel( () =>
 				{
 					var scrollPanel = MakeScrollPanel();
 
@@ -129,9 +89,10 @@ public class SpawnMenu : Panel
 
 
 			return catSplit;
-		} );
+		} ).SetActive();
 
-		tabSplit.Register( "Entities", () =>
+		// Entity Tab Creation
+		tabSplit.Register( "Entities" ).WithPanel( () =>
 		{
 			var scrollPanel = MakeScrollPanel();
 

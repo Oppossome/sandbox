@@ -12,6 +12,6 @@ public class CategorySplit : SplitBase
 	public CategorySplit()
 	{
 		StyleSheet.Load( "/ui/spawnmenu/library/CategorySplit.scss" );
-		BindClass( "bodyHidden", () => CurrentContent is null );
+		BindClass( "bodyHidden", () => CurrentButton == null || CurrentButton.GetPanel() is null );
 	}	
 }
