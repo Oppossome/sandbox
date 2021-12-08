@@ -46,6 +46,7 @@ namespace assetmanager.quakebsp
 			for ( int i = 0; i < 4; i++ )
 				offset[i] = BitConverter.ToInt32( fileBytes, 40 + i * 4 );
 
+			bool transTexture = false; 
 			List<Byte> clrBytes = new();
 			for( int start = offset[0]; start < offset[1]; start++ )
 			{
@@ -53,14 +54,18 @@ namespace assetmanager.quakebsp
 
 				for ( int i = 0; i < 3; i++ )
 					clrBytes.Add( colorPallet[clrIndex, i] );
+
+				if ( clrIndex == 255 ) transTexture = true;
+				clrBytes.Add( (byte)(clrIndex == 255 ? 0 : 255) );
 			}
 
 
-			Texture2DBuilder nTex = Texture.Create( (int)width, (int)height, ImageFormat.RGB888 );
+			Texture2DBuilder nTex = Texture.Create( (int)width, (int)height, ImageFormat.RGBA8888 );
 			nTex.WithData( clrBytes.ToArray(), clrBytes.Count() );
 
-			Material toEdit = Material.Load( "materials/dev/dev_measuregeneric01b.vmat" ).CreateCopy();
+			Material toEdit = Material.Load( transTexture ? "materials/decaltests/grunge_01.vmat" : "materials/dev/dev_measuregeneric01b.vmat" ).CreateCopy();
 			toEdit.OverrideTexture( "Color", nTex.Finish() );
+			toEdit.OverrideTexture( "Normal", null );
 			return toEdit;
 		}
 	}
