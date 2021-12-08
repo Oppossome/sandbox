@@ -1,4 +1,8 @@
 ﻿using System;
+using System.IO;
+using System.Threading.Tasks;
+using Sandbox.UI;
+using Sandbox.UI.Construct;
 
 namespace Sandbox.Tools
 {
@@ -33,6 +37,18 @@ namespace Sandbox.Tools
 
 				CreateHitEffects( tr.EndPos );
 			}
+		}
+
+		public override void ReadSettings( BinaryReader streamReader )
+		{
+			Log.Info( new Color().Read(streamReader) );
+
+		}
+
+		public override Panel MakeSettingsPanel()
+		{
+
+			return new();
 		}
 	}
 }

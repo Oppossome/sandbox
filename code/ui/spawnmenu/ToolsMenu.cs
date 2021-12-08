@@ -41,7 +41,8 @@ public class ToolsMenu : TabSplit
 
 				ToolButtons[entry.Name] = toolButton;
 				if ( entry.Name == ConsoleSystem.GetValue( "tool_current" ) )
-					toolButton.SetActive();
+					DisplayCurrent( toolButton );
+
 			}
 
 			return catSplit;
@@ -61,6 +62,19 @@ public class ToolsMenu : TabSplit
 		} );
 	}
 
+	private void DisplayCurrent( SplitButton tBtn )
+	{
+		if ( Local.Pawn is null ) return;
+
+		Tool userTool = (Tool)Local.Pawn.Children.FirstOrDefault( x => x is Tool );
+
+		if ( userTool != null && userTool.CurrentTool != null )
+		{
+			Panel sPanel = userTool.CurrentTool.MakeSettingsPanel();
+			tBtn.SetPanel( sPanel ).SetActive();
+		}
+	}
+
 	[Event( "tool-switched" )]
 	public void ToolSwitched( BaseTool tool )
 	{
@@ -68,8 +82,6 @@ public class ToolsMenu : TabSplit
 		if ( ToolButtons.TryGetValue( entry.Name, out SplitButton tBtn ) )
 		{
 			Panel sPanel = tool.MakeSettingsPanel();
-			Log.Info( sPanel );
-
 			tBtn.SetPanel( sPanel ).SetActive();
 		}
 	}

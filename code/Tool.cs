@@ -1,6 +1,9 @@
 ﻿using Sandbox;
-using Sandbox.Tools;
 using Sandbox.UI;
+using Sandbox.Tools;
+using System.IO;
+using System.Linq;
+using System;
 
 [Library( "weapon_tool", Title = "Toolgun" )]
 partial class Tool : Carriable
@@ -100,6 +103,22 @@ partial class Tool : Carriable
 
 namespace Sandbox.Tools
 {
+	public class SettingsWriter : BinaryWriter
+	{		
+		public SettingsWriter() : base( new MemoryStream() )
+		{
+
+		}
+
+		protected override void Dispose( bool disposing )
+		{
+			MemoryStream streamData = (MemoryStream)BaseStream;
+			string streamString = Convert.ToBase64String( streamData.ToArray() );
+			BaseTool.ReplicateSettings( streamString );
+			base.Dispose( disposing );
+		}
+	}
+
 	public partial class BaseTool : BaseNetworkable
 	{
 		public Tool Parent { get; set; }
@@ -110,6 +129,11 @@ namespace Sandbox.Tools
 		public virtual Panel MakeSettingsPanel()
 		{
 			return null;
+		}
+
+		public virtual void ReadSettings( BinaryReader streamReader )
+		{
+
 		}
 
 		public virtual void Activate()
@@ -135,6 +159,19 @@ namespace Sandbox.Tools
 		public virtual void CreateHitEffects( Vector3 pos )
 		{
 			Parent?.CreateHitEffects( pos );
+		}
+
+		[ServerCmd]
+		public static void ReplicateSettings( string rawStream )
+		{
+			Tool callerTool = (Tool)ConsoleSystem.Caller.Pawn.Children.FirstOrDefault( x => x is Tool );
+			if( callerTool == null) return;
+
+			byte[] streamBytes = Convert.FromBase64String( rawStream );
+			BinaryReader bReader = new( new MemoryStream( streamBytes ) );
+
+			callerTool.CurrentTool.ReadSettings( bReader );
+			bReader.Close();
 		}
 	}
 }
