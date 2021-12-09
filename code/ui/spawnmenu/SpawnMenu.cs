@@ -53,29 +53,25 @@ public class SpawnMenu : Panel
 					cell.AddChild(spIcon);
 				};
 
+				var files = FileSystem.Mounted.FindFile( "models", "*.vmdl_c.png", true )
+					.Concat( FileSystem.Mounted.FindFile( "models", "*.vmdl_c", true ) );
 
 				List<string> alreadyAdded = new();
-				foreach ( var file in FileSystem.Mounted.FindFile( "models", "*.vmdl_c.png", true ) )
-				{
-					if ( string.IsNullOrWhiteSpace( file ) ) continue;
-					if ( file.Contains( "_lod0" ) ) continue;
-					if ( file.Contains( "clothes" ) ) continue;
-
-					scrollPanel.AddItem( file.Remove( file.Length - 6 ) );
-					alreadyAdded.Add( file.Remove( file.Length - 4 ) );
-				}
-
-				int c = 0;
-				foreach ( var file in FileSystem.Mounted.FindFile( "models", "*.vmdl_c", true ) )
+				foreach ( var file in files)
 				{
 					if ( string.IsNullOrWhiteSpace( file ) ) continue;
 					if ( file.Contains( "clothes" ) ) continue;
 					if ( file.Contains( "_lod0" ) ) continue;
 					if ( alreadyAdded.Contains( file ) ) continue;
 
-					scrollPanel.AddItem( file.Remove( file.Length - 2 ) );
+					string filePath = Regex.Match( file, @"^(.*\.vmdl)" ).Groups[1].Value;
+					
+					if( !alreadyAdded.Contains( filePath ) )
+					{
+						scrollPanel.AddItem( filePath );
+						alreadyAdded.Add( filePath );
+					}
 				}
-
 
 				return scrollPanel;
 			} ).SetActive();
