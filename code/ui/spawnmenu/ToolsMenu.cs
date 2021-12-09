@@ -75,13 +75,26 @@ public class ToolsMenu : TabSplit
 		}
 	}
 
-	[Event( "tool-switched" )]
-	public void ToolSwitched( BaseTool tool )
+
+	BaseTool LastTool = null;
+	public override void Tick()
 	{
-		var entry = Library.GetAttribute( tool.GetType() );
+		base.Tick();
+
+		if ( Local.Pawn is null )
+			return;
+
+		Tool userTool = (Tool)Local.Pawn.Children.FirstOrDefault( x => x is Tool );
+
+		if ( userTool.CurrentTool is not BaseTool currentTool || currentTool == LastTool )
+			return;
+
+		var entry = Library.GetAttribute( currentTool.GetType() );
+		LastTool = currentTool;
+
 		if ( ToolButtons.TryGetValue( entry.Name, out SplitButton tBtn ) )
 		{
-			Panel sPanel = tool.MakeSettingsPanel();
+			Panel sPanel = currentTool.MakeSettingsPanel();
 			tBtn.SetPanel( sPanel ).SetActive();
 		}
 	}

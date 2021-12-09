@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sandbox;
 using Sandbox.UI;
 
-public class TabSplit : SplitBase
+public class SettingsPanel : Panel
 {
-	public TabSplit()
+	public SettingsPanel()
 	{
-		StyleSheet.Load( "/ui/spawnmenu/library/TabSplit.scss" );
+		StyleSheet.Load( "/ui/spawnmenu/library/SettingsPanel.scss" );
 	}
 }

@@ -9,6 +9,8 @@ namespace Sandbox.Tools
 	[Library( "tool_color", Title = "Color", Description = "Change render color and alpha of entities", Group = "construction" )]
 	public partial class ColorTool : BaseTool
 	{
+		public Color Color = Color.Blue;
+
 		public override void Simulate()
 		{
 			if ( !Host.IsServer )
@@ -33,7 +35,7 @@ namespace Sandbox.Tools
 				if ( tr.Entity is not ModelEntity modelEnt )
 					return;
 
-				modelEnt.RenderColor = Color.Random;
+				modelEnt.RenderColor = Color;
 
 				CreateHitEffects( tr.EndPos );
 			}
@@ -41,14 +43,24 @@ namespace Sandbox.Tools
 
 		public override void ReadSettings( BinaryReader streamReader )
 		{
-			Log.Info( new Color().Read(streamReader) );
-
+			Color = Color.Read(streamReader);
 		}
 
 		public override Panel MakeSettingsPanel()
 		{
+			SettingsPanel sPanel = new();
 
-			return new();
+			ColorPicker clrPicker = new();
+			sPanel.AddChild(clrPicker);
+
+			clrPicker.OnFinalValue = ( Color clr ) =>
+			{
+				using ( SettingsWriter writer = new() ) {
+					clr.Write( writer );
+				}
+			};
+
+			return sPanel;
 		}
 	}
 }

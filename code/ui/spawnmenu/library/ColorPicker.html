@@ -1,0 +1,26 @@
+﻿<link rel="stylesheet" href="ColorPicker.scss">
+
+<div>
+    <text class="title">Color picker</text>
+
+    <div class="viewToggler">
+        <div @ref="ColorPreview" class="colorPreview"></div>
+        <text class="tabyIcon">⯆</text>
+    </div>
+
+    <div class="bodyDropdown">
+        <div class="bodyInner">
+            <div class="pickerPanel" @ref="PickerPanel" onmousemove="PickerMove()" onmousedown="PickerClicking(true)" onmouseup="PickerClicking(false)">
+                <div class="colorOverlay"></div>
+                <div class="colorOverlay"></div>
+
+                <div @ref="PickerCursor" class="pickerCursor"></div> 
+            </div>
+
+            <div @ref="SliderPanel" class="sliderGroup">
+
+
+            </div>
+        </div>
+    </div>
+</div>

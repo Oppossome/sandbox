@@ -37,7 +37,7 @@ partial class Tool : Carriable
 			return;
 
 		// Already the right tool
-		if ( CurrentTool != null && CurrentTool.Parent == this && CurrentTool.Owner == owner.Pawn && CurrentTool.ClassInfo.IsNamed( toolName ) )
+		if ( CurrentTool != null && Library.GetAttribute( CurrentTool.GetType() ).Name == toolName )
 			return;
 
 		if ( CurrentTool != null )
@@ -53,9 +53,6 @@ partial class Tool : Carriable
 			CurrentTool.Parent = this;
 			CurrentTool.Owner = owner.Pawn as Player;
 			CurrentTool.Activate();
-
-			if ( Host.IsClient && owner == Local.Client)
-				Event.Run( "tool-switched", CurrentTool );
 		}
 	}
 
