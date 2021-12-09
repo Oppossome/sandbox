@@ -21,12 +21,15 @@ public class SpawnIcon : Panel
 		IconText = iconName;
 	}
 
-	private void SetIcon(Texture icon) =>
+	public SpawnIcon WithIcon(Texture icon )
+	{
 		IconPanel.Style.BackgroundImage = icon;
+		return this;
+	}
 
 	public SpawnIcon WithIcon(string iconPath)
 	{
-		SetIcon( Texture.Load( iconPath ) );
+		WithIcon( Texture.Load( iconPath ) );
 		return this;
 	}
 

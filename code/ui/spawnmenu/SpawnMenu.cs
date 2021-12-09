@@ -40,8 +40,12 @@ public class SpawnMenu : Panel
 				scrollPanel.OnCreateCell = ( cell, data ) =>
 				{
 					string modelName = (string)data;
-					var spIcon = new SpawnIcon( GetFileName( modelName ) )
-						.WithRenderedIcon( modelName );
+					var spIcon = new SpawnIcon( GetFileName( modelName ) );
+
+					if ( Texture.Load( $"/models/{modelName}_c.png" ) is Texture tx ) 
+						spIcon.WithIcon( tx );
+					else 
+						spIcon.WithRenderedIcon( modelName );
 
 					spIcon.WithCallback( () =>
 						ConsoleSystem.Run( "spawn", $"models/{modelName}" ) );
