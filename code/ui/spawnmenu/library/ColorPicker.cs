@@ -11,13 +11,15 @@ public class ColorPicker : Panel
 {
 	public Action<Color> OnValueChanged;
 	public Action<Color> OnFinalValue;
+	protected Slider TransSlider;
+	protected Slider HueSlider;
+	protected bool IsOpen;
 
 	protected Panel ColorPreview { get; set; }
 	protected Panel PickerCursor { get; set; }
 	protected Panel PickerPanel { get; set; }
 	protected Panel SliderPanel { get; set; }
-	protected Slider TransSlider;
-	protected Slider HueSlider;
+	public string TabText { get; set; } = "⯇";
 
 	private ColorHsv colorHSV = new ColorHsv( 255, 1, 1 );
 	public ColorHsv ColorHSV
@@ -33,7 +35,7 @@ public class ColorPicker : Panel
 	public ColorPicker()
 	{
 		PickerCursor.BindClass("active", () => IsClicking );
-		AddClass( "open" );
+		BindClass( "open", () => IsOpen );
 
 		HueSlider = new( 0, 360, true );
 		SliderPanel.AddChild( HueSlider );
@@ -57,17 +59,23 @@ public class ColorPicker : Panel
 
 		TransSlider.OnValueChanged = ( float trans ) =>
 		{
-			ColorHSV = ColorHSV.WithAlpha( trans );
+			ColorHSV = ColorHSV.WithAlpha( 1 - trans );
 			OnValueChanged?.Invoke( ColorHSV );
 		};
 
 		TransSlider.OnFinalValue = ( float trans ) =>
 		{
-			ColorHSV = ColorHSV.WithAlpha( trans );
+			ColorHSV = ColorHSV.WithAlpha( 1 - trans );
 			OnFinalValue?.Invoke( ColorHSV );
 		};
 
 		ColorHSV = Color.Blue;
+	}
+
+	public void ToggleWindow()
+	{
+		IsOpen = !IsOpen;
+		TabText = IsOpen ? "⯆" : "⯇";
 	}
 
 	public void UpdateUI()
@@ -79,11 +87,11 @@ public class ColorPicker : Panel
 		PickerCursor.Style.Top = Length.Percent( (1 - ColorHSV.Value) * 100 );
 		PickerCursor.Style.BackgroundColor = ColorHSV.WithAlpha( 1 );
 
-		TransSlider.Value = ColorHSV.Alpha;
+		TransSlider.Value = 1 - ColorHSV.Alpha;
 		HueSlider.Value = ColorHSV.Hue;
 
 		string hexColor = ColorHSV.WithAlpha( 1 ).ToColor().Hex;
-		TransSlider.Style.Set( "background", $"linear-gradient(to bottom, {hexColor} 0%, rgba({hexColor}, 0) 100%)" );
+		TransSlider.Style.Set( "background", $"linear-gradient(to top, {hexColor} 0%, rgba({hexColor}, 0) 100%)" );
 	}
 
 	bool IsClicking = false;
@@ -91,7 +99,7 @@ public class ColorPicker : Panel
 	{
 		IsClicking = isClicking;
 
-		if ( !isClicking ) OnFinalValue?.Invoke(ColorHSV); // Call value changed callback
+		if ( !isClicking ) OnFinalValue?.Invoke(ColorHSV);
 		else PickerMove();
 	}
 	public void PickerMove()

@@ -3,9 +3,9 @@
 <div>
     <text class="title">Color picker</text>
 
-    <div class="viewToggler">
+    <div class="viewToggler" onclick="ToggleWindow()">
         <div @ref="ColorPreview" class="colorPreview"></div>
-        <text class="tabyIcon">⯆</text>
+        <text @text="TabText" class="tabyIcon">⯆</text>
     </div>
 
     <div class="bodyDropdown">

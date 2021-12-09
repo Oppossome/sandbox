@@ -12,7 +12,9 @@
     & .viewToggler {
         border: 1px solid #90a4ad;
         border-radius: 5px;
+        cursor: pointer;
         height: 35px;
+        
 
         & .colorPreview {
             background-color: purple;
@@ -46,6 +48,7 @@
         border-radius: 0px 0px 5px 5px;
         border: 1px solid #90a4ad;
         border-top: none;
+        display: none;
 
         padding: 0px 5px 5px 5px;
         height: 250px;
@@ -118,6 +121,10 @@
         & .viewToggler {
             border-radius: 5px 5px 0 0;
             border-bottom: none;
+        }
+
+        & .bodyDropdown {
+            display: flex;
         }
      }
 }
