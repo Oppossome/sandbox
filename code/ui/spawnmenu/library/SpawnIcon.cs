@@ -59,17 +59,4 @@ public class SpawnIcon : Panel
 		IconPanel.AddClass( "noicon" );
 		return this;
 	}
-
-	[ClientCmd]
-	public static void ResetNormal()
-	{
-		Local.Pawn.EyeRot = Rotation.FromPitch(0);
-	}
-
-	[ClientCmd]
-	public static void GetNormal()
-	{
-		Log.Info( Local.Pawn.EyeRot.Forward );
-
-	}
 }
