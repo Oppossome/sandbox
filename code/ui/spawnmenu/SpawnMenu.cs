@@ -50,15 +50,28 @@ public class SpawnMenu : Panel
 				};
 
 
+				List<string> alreadyAdded = new();
+				foreach ( var file in FileSystem.Mounted.FindFile( "models", "*.vmdl_c.png", true ) )
+				{
+					if ( string.IsNullOrWhiteSpace( file ) ) continue;
+					if ( file.Contains( "_lod0" ) ) continue;
+					if ( file.Contains( "clothes" ) ) continue;
+
+					scrollPanel.AddItem( file.Remove( file.Length - 6 ) );
+					alreadyAdded.Add( file.Remove( file.Length - 4 ) );
+				}
+
 				int c = 0;
 				foreach ( var file in FileSystem.Mounted.FindFile( "models", "*.vmdl_c", true ) )
 				{
 					if ( string.IsNullOrWhiteSpace( file ) ) continue;
 					if ( file.Contains( "clothes" ) ) continue;
 					if ( file.Contains( "_lod0" ) ) continue;
+					if ( alreadyAdded.Contains( file ) ) continue;
 
 					scrollPanel.AddItem( file.Remove( file.Length - 2 ) );
 				}
+
 
 				return scrollPanel;
 			} ).SetActive();
