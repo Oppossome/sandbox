@@ -146,8 +146,11 @@ public partial class Weapon : BaseWeapon, IUse
 	/// <summary>
 	/// Shoot a single bullet
 	/// </summary>
-	public virtual void ShootBullet( Vector3 pos, Vector3 dir, float spread, float force, float damage, float bulletSize )
+	public virtual void ShootBullet( Vector3 pos, Vector3 dir, float spread, float force, float damage, float bulletSize, int bulletNumber = 0 )
 	{
+		//Sync bullet random cones
+		Rand.SetSeed( bulletNumber + Time.Tick );
+
 		var forward = dir;
 		forward += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * spread * 0.25f;
 		forward = forward.Normal;
@@ -158,23 +161,18 @@ public partial class Weapon : BaseWeapon, IUse
 		//
 		foreach ( var tr in TraceBullet( pos, pos + forward * 5000, bulletSize ) )
 		{
-			tr.Surface.DoBulletImpact( tr );
+			// Personal taste, I hate the random smoke clouds in the air
+			if ( tr.Hit ) tr.Surface.DoBulletImpact( tr );
 
 			if ( !IsServer ) continue;
 			if ( !tr.Entity.IsValid() ) continue;
 
-			//
-			// We turn predictiuon off for this, so any exploding effects don't get culled etc
-			//
-			using ( Prediction.Off() )
-			{
-				var damageInfo = DamageInfo.FromBullet( tr.EndPos, forward * 100 * force, damage )
-					.UsingTraceResult( tr )
-					.WithAttacker( Owner )
-					.WithWeapon( this );
+			var damageInfo = DamageInfo.FromBullet( tr.EndPos, forward * 100 * force, damage )
+				.UsingTraceResult( tr )
+				.WithAttacker( Owner )
+				.WithWeapon( this );
 
-				tr.Entity.TakeDamage( damageInfo );
-			}
+			tr.Entity.TakeDamage( damageInfo );
 		}
 	}
 
@@ -196,7 +194,7 @@ public partial class Weapon : BaseWeapon, IUse
 
 		for ( int i = 0; i < numBullets; i++ )
 		{
-			ShootBullet( pos, dir, spread, force / numBullets, damage, bulletSize );
+			ShootBullet( pos, dir, spread, force / numBullets, damage, bulletSize, i );
 		}
 	}
 }
