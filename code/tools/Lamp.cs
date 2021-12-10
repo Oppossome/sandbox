@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Sandbox;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
@@ -11,6 +12,8 @@ namespace Sandbox.Tools
 		PreviewEntity previewModel;
 
 		public Color Color = Color.White;
+		public float Range = 512;
+		public float Fov = 45;
 
 		private string Model => "models/torch/torch.vmdl";
 
@@ -70,12 +73,12 @@ namespace Sandbox.Tools
 				{
 					Enabled = true,
 					DynamicShadows = true,
-					Range = 512,
+					Range = Range,
 					Falloff = 1.0f,
 					LinearAttenuation = 0.0f,
 					QuadraticAttenuation = 1.0f,
-					InnerConeAngle = 25,
-					OuterConeAngle = 45,
+					InnerConeAngle = MathF.Max(Fov - 20, 20),
+					OuterConeAngle = Fov,
 					Brightness = 10,
 					Color = Color,
 					Rotation = Rotation.Identity,
@@ -85,6 +88,7 @@ namespace Sandbox.Tools
 				lamp.SetModel( Model );
 				lamp.SetupPhysicsFromModel( PhysicsMotionType.Dynamic, false );
 				lamp.Position = tr.EndPos + -lamp.CollisionBounds.Center + tr.Normal * lamp.CollisionBounds.Size * 0.5f;
+				lamp.Rotation = Rotation.FromYaw( Owner.EyeRot.Yaw() );
 				UndoHandler.Register( Owner, lamp );
 			}
 		}
@@ -92,6 +96,8 @@ namespace Sandbox.Tools
 		public override void ReadSettings( BinaryReader streamReader )
 		{
 			Color = Color.Read( streamReader );
+			Range = streamReader.ReadSingle();
+			Fov = streamReader.ReadSingle();
 		}
 
 		private void UpdateSettings()
@@ -99,6 +105,8 @@ namespace Sandbox.Tools
 			using ( SettingsWriter writer = new() )
 			{
 				Color.Write( writer );
+				Range.Write( writer );
+				Fov.Write( writer );
 			}
 		}
 
@@ -112,6 +120,26 @@ namespace Sandbox.Tools
 
 				UpdateSettings();
 			} );
+
+			SliderLabeled rangeSlider = sPanel.Add.SliderLabeled( "Range", 0, 1024, 1 );
+			rangeSlider.Value = Range;
+
+			rangeSlider.OnFinalValue = (float rangeValue) =>
+			{
+				Range = rangeValue;
+				UpdateSettings();
+			};
+
+			SliderLabeled fovSlider = sPanel.Add.SliderLabeled( "FOV", 1, 90, 1 );
+			fovSlider.Value = Fov;
+
+			fovSlider.OnFinalValue = ( float fovValue ) =>
+			{
+				Fov = fovValue;
+				UpdateSettings();
+			};
+
+
 
 			return sPanel;
 		}

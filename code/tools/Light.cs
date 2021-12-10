@@ -163,7 +163,7 @@ namespace Sandbox.Tools
 				UpdateSettings();
 			};
 
-			SliderLabeled ropeSlider = sPanel.Add.SliderLabeled( "Rope Length", 0, 1000, 1 );
+			SliderLabeled ropeSlider = sPanel.Add.SliderLabeled( "Rope Length", 0, 256, 1 );
 			ropeSlider.Value = RopeLength;
 
 			ropeSlider.OnFinalValue = ( float ropeSlider ) =>
