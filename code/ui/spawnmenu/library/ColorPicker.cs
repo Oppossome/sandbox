@@ -69,7 +69,7 @@ public class ColorPicker : Panel
 			OnFinalValue?.Invoke( ColorHSV );
 		};
 
-		ColorHSV = Color.Blue;
+		ColorHSV = Color.White;
 	}
 
 	public void ToggleWindow()

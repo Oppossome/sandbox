@@ -1,11 +1,18 @@
-﻿namespace Sandbox.Tools
+﻿using System.IO;
+using Sandbox;
+using Sandbox.UI;
+
+namespace Sandbox.Tools
 {
 	[Library( "tool_light", Title = "Lights", Description = "A dynamic point light", Group = "construction" )]
 	public partial class LightTool : BaseTool
 	{
 		PreviewEntity previewModel;
 
+		public Color Color = Color.White;
+
 		private string Model => "models/light/light_tubular.vmdl";
+
 
 		protected override bool IsPreviewTraceValid( TraceResult tr )
 		{
@@ -67,7 +74,7 @@
 					LinearAttenuation = 0.0f,
 					QuadraticAttenuation = 1.0f,
 					Brightness = 1,
-					Color = Color.Random,
+					Color = Color,
 					//LightCookie = Texture.Load( "materials/effects/lightcookie.vtex" )
 				};
 
@@ -113,6 +120,30 @@
 					spring.Remove();
 				} );
 			}
+		}
+
+		public override void ReadSettings( BinaryReader streamReader )
+		{
+			Color = Color.Read( streamReader );
+		}
+
+		public override Panel MakeSettingsPanel()
+		{
+			SettingsPanel sPanel = new();
+			sPanel.AddChild( new Title( "Light Color" ) );
+
+			ColorPicker clrPicker = new();
+			sPanel.AddChild( clrPicker );
+
+			clrPicker.OnFinalValue = ( Color clr ) =>
+			{
+				using ( SettingsWriter writer = new() )
+				{
+					clr.Write( writer );
+				}
+			};
+
+			return sPanel;
 		}
 	}
 }

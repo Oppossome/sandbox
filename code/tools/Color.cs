@@ -9,7 +9,7 @@ namespace Sandbox.Tools
 	[Library( "tool_color", Title = "Color", Description = "Change render color and alpha of entities", Group = "construction" )]
 	public partial class ColorTool : BaseTool
 	{
-		public Color Color = Color.Blue;
+		public Color Color = Color.White;
 
 		public override void Simulate()
 		{

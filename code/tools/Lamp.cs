@@ -1,9 +1,15 @@
-﻿namespace Sandbox.Tools
+﻿using System.IO;
+using Sandbox;
+using Sandbox.UI;
+
+namespace Sandbox.Tools
 {
 	[Library( "tool_lamp", Title = "Lamps", Description = "Directional light source that casts shadows", Group = "construction" )]
 	public partial class LampTool : BaseTool
 	{
 		PreviewEntity previewModel;
+
+		public Color Color = Color.White;
 
 		private string Model => "models/torch/torch.vmdl";
 
@@ -70,7 +76,7 @@
 					InnerConeAngle = 25,
 					OuterConeAngle = 45,
 					Brightness = 10,
-					Color = Color.Random,
+					Color = Color,
 					Rotation = Rotation.Identity,
 					LightCookie = Texture.Load( "materials/effects/lightcookie.vtex" )
 				};
@@ -80,6 +86,30 @@
 				lamp.Position = tr.EndPos + -lamp.CollisionBounds.Center + tr.Normal * lamp.CollisionBounds.Size * 0.5f;
 				UndoHandler.Register( Owner, lamp );
 			}
+		}
+
+		public override void ReadSettings( BinaryReader streamReader )
+		{
+			Color = Color.Read( streamReader );
+		}
+
+		public override Panel MakeSettingsPanel()
+		{
+			SettingsPanel sPanel = new();
+			sPanel.AddChild( new Title( "Lamp Color" ) );
+
+			ColorPicker clrPicker = new();
+			sPanel.AddChild( clrPicker );
+
+			clrPicker.OnFinalValue = ( Color clr ) =>
+			{
+				using ( SettingsWriter writer = new() )
+				{
+					clr.Write( writer );
+				}
+			};
+
+			return sPanel;
 		}
 	}
 }
