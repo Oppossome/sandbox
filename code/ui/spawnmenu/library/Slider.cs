@@ -13,8 +13,10 @@ public class Slider : Panel
 	public Action<float> OnFinalValue;
 	public Panel Grabber { get; set; }
 	bool Vertical = false;
+
 	float sliderValue;
 	float Min, Max;
+
 
 	public float Value
 	{
@@ -35,10 +37,10 @@ public class Slider : Panel
 		Max = max;
 		Min = min;
 	}
-
+		
 	protected void UpdateUI()
 	{
-		float percentage = Value / (Max - Min);
+		float percentage = (Value - Min ) / (Max - Min);
 		if( Vertical ) Grabber.Style.Top = Length.Percent( percentage * 100 );
 		else Grabber.Style.Left = Length.Percent( percentage * 100 );
 	}
@@ -60,5 +62,19 @@ public class Slider : Panel
 		if ( Vertical ) Value = Math.Clamp( Min + localPos.y * (Max - Min), Min, Max ); 
 		else Value = Math.Clamp(Min + localPos.x * (Max - Min), Min, Max);
 		OnValueChanged?.Invoke( Value );
+	}
+}
+
+namespace Sandbox.UI.Construct
+{
+	public static class SliderCreator 
+	{
+		public static Slider Slider( this PanelCreator self, float min, float max, bool vertical = false)
+		{
+			Slider nSlider = new( min, max, vertical );
+			self.panel.AddChild( nSlider );
+
+			return nSlider;
+		}
 	}
 }

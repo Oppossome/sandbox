@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Sandbox;
 using Sandbox.UI;
+using Sandbox.UI.Construct;
 
 namespace Sandbox.Tools
 {
@@ -93,21 +94,24 @@ namespace Sandbox.Tools
 			Color = Color.Read( streamReader );
 		}
 
+		private void UpdateSettings()
+		{
+			using ( SettingsWriter writer = new() )
+			{
+				Color.Write( writer );
+			}
+		}
+
 		public override Panel MakeSettingsPanel()
 		{
 			SettingsPanel sPanel = new();
 			sPanel.AddChild( new Title( "Lamp Color" ) );
 
-			ColorPicker clrPicker = new();
-			sPanel.AddChild( clrPicker );
+			ColorPicker cPicker = sPanel.Add.ColorPicker( ( Color clr ) => {
+				Color = clr;
 
-			clrPicker.OnFinalValue = ( Color clr ) =>
-			{
-				using ( SettingsWriter writer = new() )
-				{
-					clr.Write( writer );
-				}
-			};
+				UpdateSettings();
+			} );
 
 			return sPanel;
 		}

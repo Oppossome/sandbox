@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Sandbox;
 using Sandbox.UI;
+using Sandbox.UI.Construct;
 
 [UseTemplate]
 public class ColorPicker : Panel
@@ -37,8 +38,7 @@ public class ColorPicker : Panel
 		PickerCursor.BindClass("active", () => IsClicking );
 		BindClass( "open", () => IsOpen );
 
-		HueSlider = new( 0, 360, true );
-		SliderPanel.AddChild( HueSlider );
+		HueSlider = SliderPanel.Add.Slider( 0, 360, true );
 		HueSlider.AddClass( "hue" );
 
 		HueSlider.OnValueChanged = ( float hue ) =>
@@ -53,8 +53,7 @@ public class ColorPicker : Panel
 			OnFinalValue?.Invoke( ColorHSV );
 		};
 
-		TransSlider = new( 0, 1, true );
-		SliderPanel.AddChild( TransSlider );
+		TransSlider = SliderPanel.Add.Slider( 0, 1, true );
 		TransSlider.AddClass( "trans" );
 
 		TransSlider.OnValueChanged = ( float trans ) =>
@@ -112,5 +111,19 @@ public class ColorPicker : Panel
 		ColorHSV = ColorHSV.WithSaturation( Math.Clamp( localPos.x, 0, 1 ) )
 			.WithValue( Math.Clamp( 1 - localPos.y, 0, 1 ) );
 
+	}
+}
+
+namespace Sandbox.UI.Construct
+{
+	public static class ColorPickerCreator
+	{
+		public static ColorPicker ColorPicker( this PanelCreator self, Action<Color> callback )
+		{
+			ColorPicker newColorPicker = new();
+			newColorPicker.OnFinalValue = callback;
+			self.panel.AddChild( newColorPicker );
+			return newColorPicker;
+		}
 	}
 }

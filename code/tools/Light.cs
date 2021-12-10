@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Sandbox;
 using Sandbox.UI;
+using Sandbox.UI.Construct;
 
 namespace Sandbox.Tools
 {
@@ -10,6 +11,9 @@ namespace Sandbox.Tools
 		PreviewEntity previewModel;
 
 		public Color Color = Color.White;
+		public float RopeLength = 100;
+		public float Range = 128;
+
 
 		private string Model => "models/light/light_tubular.vmdl";
 
@@ -69,7 +73,7 @@ namespace Sandbox.Tools
 				{
 					Enabled = true,
 					DynamicShadows = false,
-					Range = 128,
+					Range = Range,
 					Falloff = 1.0f,
 					LinearAttenuation = 0.0f,
 					QuadraticAttenuation = 1.0f,
@@ -109,7 +113,7 @@ namespace Sandbox.Tools
 					.WithDampingRatio( 0.7f )
 					.WithReferenceMass( light.PhysicsBody.Mass )
 					.WithMinRestLength( 0 )
-					.WithMaxRestLength( 100 )
+					.WithMaxRestLength( RopeLength )
 					.WithCollisionsEnabled()
 					.Create();
 
@@ -125,6 +129,18 @@ namespace Sandbox.Tools
 		public override void ReadSettings( BinaryReader streamReader )
 		{
 			Color = Color.Read( streamReader );
+			Range = streamReader.ReadSingle();
+			RopeLength = streamReader.ReadSingle();
+		}
+
+		private void UpdateSettings()
+		{
+			using ( SettingsWriter writer = new() )
+			{
+				Color.Write( writer );
+				Range.Write( writer );
+				RopeLength.Write( writer );
+			}
 		}
 
 		public override Panel MakeSettingsPanel()
@@ -132,16 +148,30 @@ namespace Sandbox.Tools
 			SettingsPanel sPanel = new();
 			sPanel.AddChild( new Title( "Light Color" ) );
 
-			ColorPicker clrPicker = new();
-			sPanel.AddChild( clrPicker );
+			ColorPicker cPicker = sPanel.Add.ColorPicker( ( Color clr ) => {
+				Color = clr;
 
-			clrPicker.OnFinalValue = ( Color clr ) =>
+				UpdateSettings();
+			} );
+
+			SliderLabeled rangeSlider = sPanel.Add.SliderLabeled( "Range", 32, 1024, 1 );
+			rangeSlider.Value = Range;
+
+			rangeSlider.OnFinalValue = ( float range ) =>
 			{
-				using ( SettingsWriter writer = new() )
-				{
-					clr.Write( writer );
-				}
+				Range = range;
+				UpdateSettings();
 			};
+
+			SliderLabeled ropeSlider = sPanel.Add.SliderLabeled( "Rope Length", 0, 1000, 1 );
+			ropeSlider.Value = RopeLength;
+
+			ropeSlider.OnFinalValue = ( float ropeSlider ) =>
+			{
+				RopeLength = ropeSlider;
+				UpdateSettings();
+			};
+
 
 			return sPanel;
 		}
