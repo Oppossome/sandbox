@@ -54,7 +54,6 @@ partial class SandboxPlayer : Player
 		Animator = new StandardPlayerAnimator();
 
 		MainCamera = LastCamera;
-		Camera = MainCamera;
 
 		if ( DevController is NoclipController )
 		{
@@ -97,7 +96,6 @@ partial class SandboxPlayer : Player
 		BecomeRagdollOnClient( Velocity, lastDamage.Flags, lastDamage.Position, lastDamage.Force, GetHitboxBone( lastDamage.HitboxIndex ) );
 		LastCamera = MainCamera;
 		MainCamera = new SpectateRagdollCamera();
-		Camera = MainCamera;
 		Controller = null;
 
 		EnableAllCollisions = false;
@@ -184,7 +182,6 @@ partial class SandboxPlayer : Player
 			}
 		}
 
-		Camera = GetActiveCamera();
 
 		if ( Input.Pressed( InputButton.Drop ) )
 		{
