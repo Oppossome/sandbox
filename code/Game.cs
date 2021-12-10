@@ -77,6 +77,14 @@ partial class SandboxGame : Game
 		//Log.Info( $"ent: {ent}" );
 	}
 
+	public override ICamera FindActiveCamera()
+	{
+		if ( Local.Client.DevCamera != null ) return Local.Client.DevCamera;
+		if ( Local.Pawn is SandboxPlayer ply ) return ply.GetActiveCamera();
+
+		return null;
+	}
+
 	public override void DoPlayerNoclip( Client player )
 	{
 		if ( player.Pawn is Player basePlayer )
