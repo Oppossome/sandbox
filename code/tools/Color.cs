@@ -49,6 +49,7 @@ namespace Sandbox.Tools
 		public override Panel MakeSettingsPanel()
 		{
 			SettingsPanel sPanel = new();
+			sPanel.AddChild( new Title( "Color" ) );
 
 			ColorPicker clrPicker = new();
 			sPanel.AddChild(clrPicker);

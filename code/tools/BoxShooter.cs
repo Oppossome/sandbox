@@ -3,6 +3,9 @@
 	[Library( "tool_boxgun", Title = "Box Shooter", Description = "Shoot boxes", Group = "fun" )]
 	public class BoxShooter : BaseTool
 	{
+		[ConVar.ClientData( "boxshooter_prop" )]
+		public static string ShooterProp { get; set; } = "models/citizen_props/crate01.vmdl";
+
 		TimeSince timeSinceShoot;
 
 		public override void Simulate()
@@ -30,7 +33,9 @@
 				Rotation = Owner.EyeRot
 			};
 
-			ent.SetModel( "models/citizen_props/crate01.vmdl" );
+			string shooterModel = Owner.Client.GetClientData<string>( "boxshooter_prop", "models/citizen_props/crate01.vmdl" );
+			ent.SetModel( shooterModel )
+				;
 			ent.Velocity = Owner.EyeRot.Forward * 1000;
 			UndoHandler.Register( Owner, ent );
 		}

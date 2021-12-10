@@ -42,13 +42,30 @@ public class SpawnMenu : Panel
 					string modelName = (string)data;
 					var spIcon = new SpawnIcon( GetFileName( modelName ) );
 
-					if ( Texture.Load( $"/models/{modelName}_c.png" ) is Texture tx ) 
+					if ( Texture.Load( $"/models/{modelName}_c.png" ) is Texture tx )
 						spIcon.WithIcon( tx );
-					else 
+					else
 						spIcon.WithRenderedIcon( modelName );
 
-					spIcon.WithCallback( () =>
-						ConsoleSystem.Run( "spawn", $"models/{modelName}" ) );
+					spIcon.WithCallback( ( bool isLeftClick ) =>
+					{
+						if ( isLeftClick )
+						{
+							ConsoleSystem.Run( "spawn", $"models/{modelName}" );
+							return;
+						}
+
+						PopupMenu menu = new( this );
+						menu.AddButton( "Copy path", () =>
+							Clipboard.SetText( $"models/{modelName}" ) );
+
+						menu.AddButton( "Box Shooter", () => {
+							ConsoleSystem.Run( "boxshooter_prop", $"models/{modelName}" );
+							ConsoleSystem.Run( "inventory_current", "weapon_tool" );
+							ConsoleSystem.Run( "tool_current", "tool_boxgun" );
+						} );
+					} );
+
 
 					cell.AddChild(spIcon);
 				};
@@ -87,8 +104,8 @@ public class SpawnMenu : Panel
 						string modelName = (string)data;
 						var spIcon = new SpawnIcon( GetFileName( modelName ) );
 
-						spIcon.WithCallback( () =>
-							ConsoleSystem.Run( "SpawnModel", modelName) );
+						spIcon.WithCallback( (bool isLeftClick) => 
+								ConsoleSystem.Run( "SpawnModel", modelName ) );
 
 						cell.AddChild( spIcon );
 					};
@@ -115,7 +132,7 @@ public class SpawnMenu : Panel
 				var spIcon = new SpawnIcon( entry.Title )
 					.WithIcon( $"/entity/{entry.Name}.png" );
 
-				spIcon.WithCallback( () =>
+				spIcon.WithCallback( ( isLeftClick ) =>
 					ConsoleSystem.Run( "spawn_entity", entry.Name ) );
 
 				cell.AddChild( spIcon );

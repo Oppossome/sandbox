@@ -33,9 +33,10 @@ public class SpawnIcon : Panel
 		return this;
 	}
 
-	public SpawnIcon WithCallback( Action clickCallback )
+	public SpawnIcon WithCallback( Action<bool> clickCallback )
 	{
-		InnerPanel.AddEventListener( "onclick", clickCallback );
+		InnerPanel.AddEventListener( "onrightclick", () => clickCallback.Invoke( false ) );
+		InnerPanel.AddEventListener( "onclick", () => clickCallback.Invoke( true ));
 		return this;
 	}
 
