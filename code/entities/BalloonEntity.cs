@@ -3,7 +3,7 @@
 [Library( "ent_balloon", Title = "Balloon", Spawnable = true )]
 public partial class BalloonEntity : Prop
 {
-	private static float GravityScale => -0.2f;
+	public float GravityScale = -0.2f;
 
 	public override void Spawn()
 	{
