@@ -12,10 +12,10 @@ public class Slider : Panel
 	public Action<float> OnValueChanged;
 	public Action<float> OnFinalValue;
 	public Panel Grabber { get; set; }
+	public float Min, Max;
 	bool Vertical = false;
 
 	float sliderValue;
-	float Min, Max;
 
 
 	public float Value
@@ -28,16 +28,39 @@ public class Slider : Panel
 		}
 	}
 
-	public Slider( float min, float max, bool vertical = false )
+	public Slider()
 	{
+		OnValueChanged += ( float val ) => CreateEvent( "onValueChanged" );
+		OnFinalValue += ( float val ) => CreateEvent( "onFinalValue" );
 		BindClass( "active", () => IsHolding || HasHovered );
 		BindClass( "vertical", () => Vertical );
+	}
 
+	public Slider( float min, float max, bool vertical = false ) : base()
+	{
 		Vertical = vertical;
 		Max = max;
 		Min = min;
 	}
-		
+
+	public override void SetProperty( string name, string value )
+	{
+		switch( name )
+		{
+			case "min":
+				Min = float.Parse( value );
+				return;
+			case "max":
+				Max = float.Parse( value );
+				return;
+			case "vertical":
+				Vertical = bool.Parse( value );
+				return;
+		}
+
+		base.SetProperty( name, value );
+	}
+
 	protected void UpdateUI()
 	{
 		float percentage = (Value - Min ) / (Max - Min);

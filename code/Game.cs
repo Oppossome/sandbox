@@ -1,4 +1,5 @@
-﻿using Sandbox;
+﻿using System.Linq;
+using Sandbox;
 
 partial class SandboxGame : Game
 {
@@ -28,10 +29,11 @@ partial class SandboxGame : Game
 	[ServerCmd( "spawn" )]
 	public static void Spawn( string modelname )
 	{
-		var owner = ConsoleSystem.Caller?.Pawn;
-
 		if ( ConsoleSystem.Caller == null )
 			return;
+
+		var owner = ConsoleSystem.Caller.Pawn;
+		Tool ownerTool = (Tool)owner.Children.FirstOrDefault( x => x is Tool );
 
 		var tr = Trace.Ray( owner.EyePos, owner.EyePos + owner.EyeRot.Forward * 500 )
 			.UseHitboxes()
@@ -43,6 +45,9 @@ partial class SandboxGame : Game
 		ent.Rotation = Rotation.From( new Angles( 0, owner.EyeRot.Angles().yaw, 0 ) ) * Rotation.FromAxis( Vector3.Up, 180 );
 		ent.SetModel( modelname );
 		ent.Position = tr.EndPos - Vector3.Up * ent.CollisionBounds.Mins.z;
+
+		if(modelname == "models/citizen/citizen.vmdl" && ownerTool.CurrentTool is Dresser dresser )
+			dresser.ApplyClothing(ent);
 
 		UndoHandler.Register( owner, ent );
 	}

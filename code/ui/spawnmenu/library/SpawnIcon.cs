@@ -42,7 +42,7 @@ public class SpawnIcon : Panel
 
 	public SpawnIcon WithRenderedIcon( string modelPath )
 	{
-		Model renderModel = Assets.Get<Model>( $"models/{modelPath}" );
+		Model renderModel = Assets.Get<Model>( modelPath );
 
 		Vector3 maxs = renderModel.RenderBounds.Maxs;
 		float maxDist = Vector3.DistanceBetween( Vector3.Zero, maxs );
@@ -54,7 +54,7 @@ public class SpawnIcon : Panel
 
 		using (SceneWorld.SetCurrent( new SceneWorld() ) )
 		{
-			SceneObject.CreateModel( $"models/{modelPath}", Transform.Zero );
+			SceneObject.CreateModel( modelPath, Transform.Zero );
 			scenePanel = IconPanel.Add.ScenePanel( SceneWorld.Current, camPos, camRot, 90, "renderedCam" );
 			scenePanel.AmbientColor = Color.White * 1;
 			scenePanel.RenderOnce = true;

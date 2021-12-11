@@ -42,10 +42,10 @@ public class SpawnMenu : Panel
 					string modelName = (string)data;
 					var spIcon = new SpawnIcon( GetFileName( modelName ) );
 
-					if ( Texture.Load( $"/models/{modelName}_c.png" ) is Texture tx )
+					if ( Texture.Load( $"/models/{modelName}_c.png", false ) is Texture tx )
 						spIcon.WithIcon( tx );
 					else
-						spIcon.WithRenderedIcon( modelName );
+						spIcon.WithRenderedIcon( $"models/{modelName}" );
 
 					spIcon.WithCallback( ( bool isLeftClick ) =>
 					{

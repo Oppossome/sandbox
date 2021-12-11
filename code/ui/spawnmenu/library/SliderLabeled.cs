@@ -17,7 +17,7 @@ public class SliderLabeled : Panel
 	public TextEntry ValueEntry { get; set; }
 	public Panel SliderSpot { get; set; }
 	public string TextName { get; set; }
-	public Slider Slider;
+	public Slider Slider = new();
 
 	public float Value
 	{
@@ -28,11 +28,9 @@ public class SliderLabeled : Panel
 		}
 	}
 
-	public SliderLabeled(string title, float min, float max, float step)
+	public SliderLabeled()
 	{
-		Slider = SliderSpot.Add.Slider( min, max );
-		SliderStep = step;
-		TextName = title;
+		Slider = AddChild<Slider>();
 
 		Slider.OnValueChanged = ( float val ) =>
 		{
@@ -50,16 +48,49 @@ public class SliderLabeled : Panel
 		ValueEntry.Numeric = true;
 
 		ValueEntry.AddEventListener( "onchange", () =>
-		 {
-			 if ( float.TryParse( ValueEntry.Text, out float val ) )
-			 {
-				 Value = val;
-				 OnFinalValue?.Invoke( Value );
-			 }
-		 } );
+		{
+			if ( float.TryParse( ValueEntry.Text, out float val ) )
+			{
+				Value = val;
+				OnFinalValue?.Invoke( Value );
+			}
+		} );
 
+		OnFinalValue += ( float val ) => CreateEvent( "onFinalValue" );
+		OnValueChanged += ( float val ) => CreateEvent( "onValueChanged" );
+	}
+
+	public SliderLabeled(string title, float min, float max, float step) : this()
+	{
+		SliderStep = step;
+		TextName = title;
+		Slider.Min = min;
+		Slider.Max = max;
+
+		ValueEntry.Text = min.ToString();		
 		Value = min;
-		ValueEntry.Text = min.ToString();
+	}
+
+	public override void SetProperty( string name, string value )
+	{
+		switch ( name )
+		{
+			case "step":
+				SliderStep = float.Parse( value );
+				ValueEntry.Text = Slider.Min.ToString();
+				Value = Slider.Min;
+				return;
+			case "title":
+				TextName = value;
+				return;
+		}
+
+		Slider.SetProperty( name, value );
+	}
+
+	protected override void PostTemplateApplied()
+	{
+		base.PostTemplateApplied();
 	}
 
 	protected void UpdateUI() =>

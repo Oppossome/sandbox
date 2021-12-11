@@ -20,6 +20,15 @@
         &.left {
             height: 100%;
             width: 100%;
+
+            & .canvas {
+                justify-content: space-between;
+                overflow: scroll;
+                width: 100%;
+
+                flex-wrap: wrap;
+                flex-grow: 1;
+            }
         }
 
         &.right {
@@ -31,14 +40,5 @@
                 width: 25%;
             }
         }
-    }
-
-    & .canvas {
-        justify-content: space-between;
-        overflow: scroll;
-        width: 100%;
-
-        flex-wrap: wrap;
-        flex-grow: 1;
     }
 }

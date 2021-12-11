@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
@@ -9,6 +10,7 @@ namespace Sandbox.Tools
 	[Library( "tool_balloon", Title = "Balloons", Description = "Create Balloons!", Group = "construction" )]
 	public partial class BalloonTool : BaseTool
 	{
+		public string BalloonModel = "models/citizen_props/balloonregular01.vmdl";
 		public float BalloonForce = 10;
 		public float RopeLength = 100;
 		public Color Tint = Color.Red;
@@ -74,7 +76,7 @@ namespace Sandbox.Tools
 					Position = tr.EndPos,
 				};
 
-				ent.SetModel( "models/citizen_props/balloonregular01.vmdl" );
+				ent.SetModel( BalloonModel );
 				ent.RenderColor = Tint;
 
 				UndoHandler.Register( Owner, ent );
@@ -122,6 +124,7 @@ namespace Sandbox.Tools
 			Tint = Color.Read( streamReader );
 			RopeLength = streamReader.ReadSingle();
 			BalloonForce = streamReader.ReadSingle();
+			BalloonModel = streamReader.ReadString();
 		}
 
 
@@ -132,29 +135,41 @@ namespace Sandbox.Tools
 				Tint.Write( writer );
 				RopeLength.Write( writer );
 				BalloonForce.Write( writer );
+				BalloonModel.Write( writer );
 			}
 		}
+
+		static readonly string[] balloonModels = new string[] {
+			"models/citizen_props/balloonregular01.vmdl",
+			"models/citizen_props/balloonheart01.vmdl",
+			"models/citizen_props/balloontall01.vmdl",
+			"models/citizen_props/balloonears01.vmdl",
+		};
 
 		public override Panel MakeSettingsPanel()
 		{
 			SettingsPanel sPanel = new();
-			sPanel.AddChild( new Title( "Color" ) );
 
+			sPanel.AddChild( new Title( "Balloon Model" ) );
+			ModelSelector modelSelector = sPanel.Add.ModelSelector();
+			modelSelector.Models.Add( BalloonModel );
+
+			foreach ( string model in balloonModels )
+			{
+				modelSelector.AddEntry( model, () =>
+				{
+					BalloonModel = modelSelector.Models[0];
+					UpdateSettings();
+				} );
+			}
+
+			sPanel.AddChild( new Title( "Balloon Color" ) );
 			ColorPicker cPicker = sPanel.Add.ColorPicker( ( Color clr ) => {
 				Tint = clr;
 				UpdateSettings();
 			} );
 
 			cPicker.ColorHSV = Tint;
-
-			SliderLabeled lengthSlider = sPanel.Add.SliderLabeled( "Rope Length", 0, 256, 1 );
-			lengthSlider.Value = RopeLength;
-
-			lengthSlider.OnFinalValue = ( float lengthValue ) =>
-			{
-				RopeLength = lengthValue;
-				UpdateSettings();
-			};
 
 			SliderLabeled forceSlider = sPanel.Add.SliderLabeled( "Balloon Force", 0, 100, 1 );
 			forceSlider.Value = BalloonForce;
@@ -164,6 +179,14 @@ namespace Sandbox.Tools
 				UpdateSettings();
 			};
 
+			SliderLabeled lengthSlider = sPanel.Add.SliderLabeled( "Rope Length", 0, 256, 1 );
+			lengthSlider.Value = RopeLength;
+			
+			lengthSlider.OnFinalValue = ( float lengthValue ) =>
+			{
+				RopeLength = lengthValue;
+				UpdateSettings();
+			};
 
 			return sPanel;
 		}

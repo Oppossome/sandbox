@@ -68,6 +68,8 @@ public class ColorPicker : Panel
 			OnFinalValue?.Invoke( ColorHSV );
 		};
 
+		OnValueChanged += ( Color clr ) => CreateEvent( "onValueChanged" );
+		OnFinalValue += ( Color clr ) => CreateEvent( "onFinalValue" );
 		ColorHSV = Color.White;
 	}
 
