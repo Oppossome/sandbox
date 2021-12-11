@@ -156,7 +156,7 @@ namespace Sandbox.Tools
 				UpdateSettings();
 			};
 
-			SliderLabeled forceSlider = sPanel.Add.SliderLabeled( "Balloon Force", 0, 100 );
+			SliderLabeled forceSlider = sPanel.Add.SliderLabeled( "Balloon Force", 0, 100, 1 );
 			forceSlider.Value = BalloonForce;
 
 			forceSlider.OnFinalValue = ( float forceValue ) => {
