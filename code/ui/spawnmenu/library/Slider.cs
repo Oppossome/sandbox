@@ -36,7 +36,7 @@ public class Slider : Panel
 		BindClass( "vertical", () => Vertical );
 	}
 
-	public Slider( float min, float max, bool vertical = false ) : base()
+	public Slider( float min, float max, bool vertical = false ) : this()
 	{
 		Vertical = vertical;
 		Max = max;
