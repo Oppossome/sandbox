@@ -24,14 +24,9 @@ public class DresserMenu : SettingsPanel
 	{
 		MakePreview();
 
-		foreach ( var file in FileSystem.Mounted.FindFile( "models", "*.vmdl_c", true ) )
-		{
-			if ( string.IsNullOrWhiteSpace( file ) ) continue;
-			if ( !file.Contains( "clothes" ) ) continue;
-			if ( file.Contains( "_lod0" ) ) continue;
+		foreach ( var file in Clothing )
+			ClothingSelection.AddEntry( file, () => { } );
 
-			ClothingSelection.AddEntry( $"models/{file.Remove(file.Length - 2)}", () => { } );
-		}
 	}
 
 	private void MakePreview()
@@ -51,13 +46,11 @@ public class DresserMenu : SettingsPanel
 		scenePanel.AddEventListener( "onmouseup", () =>
 		{
 			isHolding = false;
-
 		} );
 
 		scenePanel.AddEventListener( "onmousedown", () =>
 		{
 			isHolding = true;
-
 		} );
 
 		float rot = 180;
@@ -75,8 +68,6 @@ public class DresserMenu : SettingsPanel
 			rot = (rot - Mouse.Delta.x * 2f) % 360f;
 
 		} );
-
-
 	}
 
 	public override void Tick()
@@ -122,4 +113,41 @@ public class DresserMenu : SettingsPanel
 		}
 	}
 
+	public static List<string> Clothing = new()
+	{
+		"models/citizen_clothes/hat/hat_hardhat.vmdl",
+		"models/citizen_clothes/hat/hat_woolly.vmdl",
+		"models/citizen_clothes/hat/hat_securityhelmet.vmdl",
+		"models/citizen_clothes/hair/hair_malestyle02.vmdl",
+		"models/citizen_clothes/hair/hair_femalebun.black.vmdl",
+		"models/citizen_clothes/hair/hair_looseblonde/hair_looseblonde.vmdl",
+		"models/citizen_clothes/hat/hat_beret.red.vmdl",
+		"models/citizen_clothes/hat/hat.tophat.vmdl",
+		"models/citizen_clothes/hat/hat_beret.black.vmdl",
+		"models/citizen_clothes/hat/hat_cap.vmdl",
+		"models/citizen_clothes/hat/hat_leathercap.vmdl",
+		"models/citizen_clothes/hat/hat_leathercapnobadge.vmdl",
+		"models/citizen_clothes/hat/hat_securityhelmetnostrap.vmdl",
+		"models/citizen_clothes/hat/hat_service.vmdl",
+		"models/citizen_clothes/hat/hat_uniform.police.vmdl",
+		"models/citizen_clothes/hat/hat_woollybobble.vmdl",
+		"models/citizen_clothes/jacket/suitjacket/suitjacket.vmdl",
+		"models/citizen_clothes/jacket/labcoat.vmdl",
+		"models/citizen_clothes/jacket/jacket.red.vmdl",
+		"models/citizen_clothes/jacket/jacket.tuxedo.vmdl",
+		"models/citizen_clothes/jacket/jacket_heavy.vmdl",
+		"models/citizen_clothes/dress/dress.kneelength.vmdl",
+		"models/citizen_clothes/trousers/trousers.jeans.vmdl",
+		"models/citizen_clothes/trousers/trousers.lab.vmdl",
+		"models/citizen_clothes/trousers/trousers.police.vmdl",
+		"models/citizen_clothes/trousers/trousers.smart.vmdl",
+		"models/citizen_clothes/trousers/trousers.smarttan.vmdl",
+		"models/citizen_clothes/trousers/trousers_tracksuitblue.vmdl",
+		"models/citizen_clothes/trousers/trousers_tracksuit.vmdl",
+		"models/citizen_clothes/trousers/SmartTrousers/smarttrousers.vmdl",
+		"models/citizen_clothes/shoes/shorts.cargo.vmdl",
+		"models/citizen_clothes/shoes/trainers.vmdl",
+		"models/citizen_clothes/shoes/shoes.workboots.vmdl",
+		"models/citizen_clothes/shoes/SmartShoes/smartshoes.vmdl",
+	};
 }
