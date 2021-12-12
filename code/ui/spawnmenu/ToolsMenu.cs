@@ -85,8 +85,9 @@ public class ToolsMenu : TabSplit
 			return;
 
 		Tool userTool = (Tool)Local.Pawn.Children.FirstOrDefault( x => x is Tool );
+		string lastToolName = LastTool is BaseTool tool ? tool.ClassInfo.Name : "";
 
-		if ( userTool.CurrentTool is not BaseTool currentTool || currentTool == LastTool )
+		if ( userTool.CurrentTool is not BaseTool currentTool || currentTool.ClassInfo.Name == lastToolName )
 			return;
 
 		var entry = Library.GetAttribute( currentTool.GetType() );
