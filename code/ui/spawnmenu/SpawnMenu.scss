@@ -1,6 +1,7 @@
 ﻿spawnmenu {
-    background-color: rgba(0, 0, 0, .8);
     backdrop-filter: blur(8px) saturate(0.2) brightness(0.3);
+    background-color: rgba(0, 0, 0, .8);
+    z-index: 500;
 
     pointer-events: all;
     position: absolute;

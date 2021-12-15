@@ -1,8 +1,14 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Sandbox;
 
 partial class SandboxGame : Game
 {
+	public static SandboxGame Instance => (SandboxGame)Current;
+	
+	[Net]
+	public Dictionary<long, int> UndoCount { get; set; } = new();
+
 	public SandboxGame()
 	{
 		if ( IsServer )

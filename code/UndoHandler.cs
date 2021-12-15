@@ -33,6 +33,7 @@ public static class UndoHandler
 				total++;
 		}
 
+		SandboxGame.Instance.UndoCount[userId] = userProps.Count;
 		return total;
 	}
 
@@ -68,18 +69,18 @@ public static class UndoHandler
 
 	public static void Register( Entity player, Entity prop )
 	{
-		GetPlayerEntry( player.Client ).Add( new()
-		{
-			Prop = prop
-		} );
+		var propList = GetPlayerEntry( player.Client );
+		propList.Add( new() { Prop = prop } );
+
+		SandboxGame.Instance.UndoCount[player.Client.PlayerId] = propList.Count;
 	}
 
 	public static void Register( Entity player, Func<bool> func )
 	{
-		GetPlayerEntry( player.Client ).Add( new()
-		{
-			Undo = func
-		} );
+		var propList = GetPlayerEntry( player.Client );
+		propList.Add( new() { Undo = func } );
+
+		SandboxGame.Instance.UndoCount[player.Client.PlayerId] = propList.Count;
 	}
 
 	[ServerCmd("undo")]
