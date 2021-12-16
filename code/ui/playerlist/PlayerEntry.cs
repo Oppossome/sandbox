@@ -65,6 +65,11 @@ public class PlayerEntry : Panel
 		}
 	}
 
+	protected override void OnRightClick( MousePanelEvent e )
+	{
+		OnClick( e );
+	}
+
 	public EntryCategory GetCategory()
 	{
 		if ( !Owner.IsValid() ) {
