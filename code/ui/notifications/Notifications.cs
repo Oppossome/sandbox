@@ -34,7 +34,8 @@ public partial class Notifications : Panel
 			undoNotif.Data = undoCount;
 
 			undoNotif.Text = $"{undoCount} props undone";
-			undoNotif.Lifetime = -3;
+			undoNotif.Lifetime = -3f;
+			undoNotif.Jiggle = -.1f;
 			return;
 		}
 
