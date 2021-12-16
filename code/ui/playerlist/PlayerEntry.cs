@@ -129,6 +129,7 @@ public class PlayerEntry : Panel
 		if ( ConsoleSystem.Caller is not Client cl || target == null )
 			return;
 
+		Notifications.Send( To.Single( target ), $"{cl.Name} teleported to you" );
 		cl.Pawn.Position = target.Pawn.Position;
 	}
 

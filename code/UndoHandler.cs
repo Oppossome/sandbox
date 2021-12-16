@@ -60,7 +60,7 @@ public static class UndoHandler
 	{
 		if ( !Props.ContainsKey( client.PlayerId ) )
 		{
-			Notifications.AddNotification( To.Single( client ), "💡", "Want to undo? bind z undo", 5 );
+			Notifications.Send( To.Single( client ), "Want to undo? bind z undo", 5 );
 			Props[client.PlayerId] = new();
 		}
 
@@ -95,7 +95,7 @@ public static class UndoHandler
 			return;
 
 		string prefix = undone + " prop" + (undone == 1 ? "" : "s");
-		Notifications.AddNotification( To.Single( cl ), "💡",  prefix + " undone", 1 );
+		Notifications.Send( To.Single( cl ), $"{prefix} undone", 2 );
 	}
 
 	[AdminCmd("undo_everyone")]
@@ -104,7 +104,7 @@ public static class UndoHandler
 		if ( ConsoleSystem.Caller is not Client cl )
 			return;
 
-		Notifications.AddNotification( To.Single( cl ), "💡", "All ents undone", 1 );
+		Notifications.Send( To.Single( cl ), $"All ents undone", 2 );
 
 		foreach ( long id in Props.Keys )
 			DoUndo( id, -1 );
