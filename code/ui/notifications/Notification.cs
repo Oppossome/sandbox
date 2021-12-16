@@ -11,11 +11,14 @@ public class Notification : Panel
 {
 	public string Text { get; set; } 
 	public TimeSince Lifetime;
+	public string Type;
+	public Object Data;
 
-	public Notification(string text, float lifetime )
+	public Notification(string text, float lifetime, string type = "generic" )
 	{
 		Lifetime = -lifetime;
 		Text = text;
+		Type = type;
 	}
 
 	public override void Tick()

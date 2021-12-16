@@ -22,4 +22,26 @@ public partial class Notifications : Panel
 		Notification newNotif = new( text, lifetime );
 		Instance.AddChild( newNotif );
 	}
+
+	[ClientRpc]
+	public static void SendUndo(int count)
+	{
+		Notification undoNotif = (Notification)Instance.Children.FirstOrDefault( x => ((Notification)x).Type == "undo" && !x.IsDeleting );
+
+		if( undoNotif != null )
+		{
+			int undoCount = (int)undoNotif.Data + count;
+			undoNotif.Data = undoCount;
+
+			undoNotif.Text = $"{undoCount} props undone";
+			undoNotif.Lifetime = -3;
+			return;
+		}
+
+		string notif = $"{count} prop{(count > 1 ? "s" : "")} undone";
+		Notification newNotif = new( notif, 3, "undo" );
+		newNotif.Data = count;
+		
+		Instance.AddChild( newNotif );
+	}
 }

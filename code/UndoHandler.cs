@@ -94,8 +94,7 @@ public static class UndoHandler
 		if ( undone == 0 )
 			return;
 
-		string prefix = undone + " prop" + (undone == 1 ? "" : "s");
-		Notifications.Send( To.Single( cl ), $"{prefix} undone", 2 );
+		Notifications.SendUndo( To.Single( cl ), undone );
 	}
 
 	[AdminCmd("undo_everyone")]
