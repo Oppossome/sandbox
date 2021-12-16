@@ -57,13 +57,10 @@ public class PlayerEntry : Panel
 			popup.AddButton( "Undo All", () =>
 			   CleanupPlayer( UserId.ToString() ) );
 
-			if( UserId != Local.Client.PlayerId )
+			if( UserId != Local.Client.PlayerId && Owner.IsValid() )
 			{
 				popup.AddButton( "Kick", () =>
-					 ConsoleSystem.Run( $"kickid {UserId}" ) );
-
-				popup.AddButton( "Ban", () =>
-					ConsoleSystem.Run( $"banid 0 {UserId} true" ) );
+					 KickPlayer( UserId.ToString() ) );
 			}
 		}
 	}
@@ -140,5 +137,18 @@ public class PlayerEntry : Panel
 			return;
 
 		UndoHandler.DoUndo( userId, -1 );
+	}
+
+	[ServerCmd]
+	public static void KickPlayer( string userRaw )
+	{
+		if ( ConsoleSystem.Caller is not Client cl || !cl.IsListenServerHost )
+			return;
+
+		if ( !long.TryParse( userRaw, out var userId ) )
+			return;
+
+		Client target = Client.All.FirstOrDefault( x => x.PlayerId == userId );
+		if ( target != null ) target.Kick();
 	}
 }
