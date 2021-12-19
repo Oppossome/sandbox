@@ -88,6 +88,7 @@ partial class SandboxPlayer : Player
 			PlaySound( "kersplat" );
 		}
 
+		Clothing.ClearEntities();
 		VehicleController = null;
 		VehicleAnimator = null;
 		VehicleCamera = null;

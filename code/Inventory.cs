@@ -10,7 +10,9 @@ partial class Inventory : BaseInventory
 		{ typeof( PhysGun ), 0 },
 		{ typeof( GravGun ), 1 },
 		{ typeof( Tool ), 2 },
-		{ typeof( Pistol ), 3 }
+		{ typeof( Flashlight ), 3 },
+		{ typeof( Pistol ), 4 },
+		{ typeof( Fists ), 5 }
 	};
 
 
