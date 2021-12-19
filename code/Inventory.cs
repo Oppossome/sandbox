@@ -1,9 +1,19 @@
 ﻿using Sandbox;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 partial class Inventory : BaseInventory
 {
+	static Dictionary<Type, int> ToolOrder = new()
+	{
+		{ typeof( PhysGun ), 0 },
+		{ typeof( GravGun ), 1 },
+		{ typeof( Tool ), 2 },
+		{ typeof( Pistol ), 3 }
+	};
+
+
 	public Inventory( Player player ) : base( player )
 	{
 	}
@@ -33,6 +43,17 @@ partial class Inventory : BaseInventory
 	public bool IsCarryingType( Type t )
 	{
 		return List.Any( x => x?.GetType() == t );
+	}
+
+	public void SortItems()
+	{
+		this.List = this.List.OrderBy( x =>
+		{
+			if ( ToolOrder.TryGetValue( x.GetType(), out int order ) )
+				return order;
+
+			return 10;
+		} ).ToList();
 	}
 
 	public override bool Drop( Entity ent )

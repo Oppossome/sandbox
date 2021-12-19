@@ -15,18 +15,22 @@ public class InventoryBar : Panel
 		}
 	}
 
+	bool wasAlive = false;
 	public override void Tick()
 	{
 		base.Tick();
 
 		var player = Local.Pawn;
 		if ( player == null ) return;
-		if ( player.Inventory == null ) return;
+		if ( player.Inventory is not Inventory inv ) return;
+
+		if ( !wasAlive && player.LifeState == LifeState.Alive )
+			inv.SortItems();
+
+		wasAlive = player.LifeState == LifeState.Alive;
 
 		for ( int i = 0; i < slots.Count; i++ )
-		{
-			UpdateIcon( player.Inventory.GetSlot( i ), slots[i], i );
-		}
+			UpdateIcon( inv.GetSlot( i ), slots[i], i );
 	}
 
 	private static void UpdateIcon( Entity ent, InventoryIcon inventoryIcon, int i )
