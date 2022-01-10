@@ -31,7 +31,7 @@ public class ModelSelector : Panel
 			var spIcon = new SpawnIcon( GetFileName( modelPath ) );
 			spIcon.BindClass("active", () => Models.Contains(modelPath));
 
-			if ( Texture.Load( $"{modelPath}_c.png", false) is Texture tx ) spIcon.WithIcon( tx );
+			if ( Texture.Load( FileSystem.Mounted, $"{modelPath}_c.png", false) is Texture tx ) spIcon.WithIcon( tx );
 			else spIcon.WithRenderedIcon( modelPath );
 
 			cell.AddChild( spIcon );

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Sandbox;
 using Sandbox.UI;
+using Sandbox.UI.Construct;
 
 [UseTemplate]
 public class Slider : Panel
@@ -88,16 +89,13 @@ public class Slider : Panel
 	}
 }
 
-namespace Sandbox.UI.Construct
+public static class SliderCreator
 {
-	public static class SliderCreator 
+	public static Slider Slider( this PanelCreator self, float min, float max, bool vertical = false )
 	{
-		public static Slider Slider( this PanelCreator self, float min, float max, bool vertical = false)
-		{
-			Slider nSlider = new( min, max, vertical );
-			self.panel.AddChild( nSlider );
+		Slider nSlider = new Slider( min, max, vertical );
+		self.panel.AddChild( nSlider );
 
-			return nSlider;
-		}
+		return nSlider;
 	}
 }

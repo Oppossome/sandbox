@@ -10,18 +10,18 @@ namespace assetmanager
 	public partial class LoadedMesh : ModelEntity
 	{
 		[Net]
-		public string Model { get; set; }
+		public string ModelPath { get; set; }
 
 		private string LastModel { get; set; }
 
 		[Event.Tick]
 		public void Tick()
 		{
-			if ( LastModel == Model || !IsValid )
+			if ( LastModel == ModelPath || !IsValid )
 				return;
 
-			LastModel = Model;
-			SetModel( Assets.Get<Model>( Model ) );
+			LastModel = ModelPath;
+			Model = Assets.Get<Model>( ModelPath );
 			SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 		}
 
@@ -32,7 +32,7 @@ namespace assetmanager
 				return;
 
 			LoadedMesh mesh = new();
-			mesh.Model = model;
+			mesh.ModelPath = model;
 
 			UndoHandler.Register( ply, mesh );
 		}
