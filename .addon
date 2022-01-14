@@ -1,5 +1,5 @@
 {
-  "SharedAssets": null,
+  "SharedAssets": "*.*",
   "Title": "Sandbox Improved",
   "Type": "game",
   "Org": "opossum",
