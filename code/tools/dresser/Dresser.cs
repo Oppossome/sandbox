@@ -28,7 +28,7 @@ public partial class Dresser : BaseTool
 			.UseHitboxes()
 			.Run();
 
-		if ( !tr.Hit || tr.Entity is Player || tr.Entity is not ModelEntity ent || ent.GetModel().Name != "models/citizen/citizen.vmdl" )
+		if ( !tr.Hit || tr.Entity is Player || tr.Entity is not ModelEntity ent || ent.Model.Name != "models/citizen/citizen.vmdl" )
 			return;
 
 		CreateHitEffects( tr.EndPos );
