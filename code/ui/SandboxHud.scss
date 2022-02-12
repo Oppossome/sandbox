@@ -64,6 +64,12 @@ rootpanel
 	{
 		display: none;
 	}
+
+	&.camera {
+		& Health, & CurrentTool, & InventoryBar, & CrosshairCanvas {
+			display: none;
+		}
+	}
 }
 
 

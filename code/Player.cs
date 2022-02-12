@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using Sandbox.Tools;
 
 partial class SandboxPlayer : Player
 {
@@ -13,6 +14,7 @@ partial class SandboxPlayer : Player
 	[Net, Predicted] public Entity Vehicle { get; set; }
 	[Net, Predicted] public ICamera MainCamera { get; set; }
 
+	public bool InCameraTool => (Inventory.Active is Tool tool && tool.CurrentTool is CameraTool); 
 	public ICamera LastCamera { get; set; }
 
 

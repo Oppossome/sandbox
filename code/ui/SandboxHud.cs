@@ -15,6 +15,7 @@ public partial class SandboxHud : HudEntity<RootPanel>
 		if ( !IsClient )
 			return;
 
+		RootPanel.BindClass( "camera", () => Local.Pawn is SandboxPlayer ply ? ply.InCameraTool : true );
 		RootPanel.StyleSheet.Load( "/ui/SandboxHud.scss" );
 		RootPanel.DeleteChildren();
 
