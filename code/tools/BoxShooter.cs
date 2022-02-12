@@ -22,6 +22,17 @@
 					timeSinceShoot = 0;
 					ShootBox();
 				}
+			} else
+			{
+				if ( Input.Pressed( InputButton.Reload ) )
+				{
+					TraceResult tr = Trace.Ray( Owner.EyePosition, Owner.EyePosition + Owner.EyeRotation.Forward * 20000 )
+						.Ignore( Owner )
+						.Run();
+
+					if ( tr.Entity is ModelEntity ent && !string.IsNullOrEmpty(ent.GetModelName() ) )
+						ShooterProp = ent.GetModelName();
+				}
 			}
 		}
 
