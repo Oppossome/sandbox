@@ -48,8 +48,8 @@ namespace Sandbox.Tools
 				if ( !Input.Pressed( InputButton.Attack1 ) )
 					return;
 
-				var startPos = Owner.EyePos;
-				var dir = Owner.EyeRot.Forward;
+				var startPos = Owner.EyePosition;
+				var dir = Owner.EyeRotation.Forward;
 
 				var tr = Trace.Ray( startPos, startPos + dir * MaxTraceDistance )
 					.Ignore( Owner )
@@ -88,7 +88,7 @@ namespace Sandbox.Tools
 				lamp.SetModel( Model );
 				lamp.SetupPhysicsFromModel( PhysicsMotionType.Dynamic, false );
 				lamp.Position = tr.EndPos + -lamp.CollisionBounds.Center + tr.Normal * lamp.CollisionBounds.Size * 0.5f;
-				lamp.Rotation = Rotation.FromYaw( Owner.EyeRot.Yaw() );
+				lamp.Rotation = Rotation.FromYaw( Owner.EyeRotation.Yaw() );
 				UndoHandler.Register( Owner, lamp );
 			}
 		}

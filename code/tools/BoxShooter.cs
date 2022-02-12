@@ -40,14 +40,14 @@
 		{
 			var ent = new Prop
 			{
-				Position = Owner.EyePos + Owner.EyeRot.Forward * 50,
-				Rotation = Owner.EyeRot
+				Position = Owner.EyePosition + Owner.EyeRotation.Forward * 50,
+				Rotation = Owner.EyeRotation
 			};
 
 			string shooterModel = Owner.Client.GetClientData<string>( "boxshooter_prop", "models/citizen_props/crate01.vmdl" );
 			ent.SetModel( shooterModel )
 				;
-			ent.Velocity = Owner.EyeRot.Forward * 1000;
+			ent.Velocity = Owner.EyeRotation.Forward * 1000;
 			UndoHandler.Register( Owner, ent );
 		}
 	}

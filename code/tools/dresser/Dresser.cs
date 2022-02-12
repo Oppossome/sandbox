@@ -23,7 +23,7 @@ public partial class Dresser : BaseTool
 		if ( !Input.Pressed( InputButton.Attack1 ) )
 			return;
 
-		TraceResult tr = Trace.Ray( Owner.EyePos, Owner.EyePos + Owner.EyeRot.Forward * MaxTraceDistance )
+		TraceResult tr = Trace.Ray( Owner.EyePosition, Owner.EyePosition + Owner.EyeRotation.Forward * MaxTraceDistance )
 			.Ignore( Owner )
 			.UseHitboxes()
 			.Run();

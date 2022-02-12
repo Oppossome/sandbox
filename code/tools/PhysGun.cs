@@ -51,9 +51,9 @@ public partial class PhysGun : Carriable
 	{
 		if ( Owner is not Player owner ) return;
 
-		var eyePos = owner.EyePos;
-		var eyeDir = owner.EyeRot.Forward;
-		var eyeRot = Rotation.From( new Angles( 0.0f, owner.EyeRot.Angles().yaw, 0.0f ) );
+		var EyePosition = owner.EyePosition;
+		var eyeDir = owner.EyeRotation.Forward;
+		var EyeRotation = Rotation.From( new Angles( 0.0f, owner.EyeRotation.Angles().yaw, 0.0f ) );
 
 		if ( Input.Pressed( InputButton.Attack1 ) )
 		{
@@ -84,11 +84,11 @@ public partial class PhysGun : Carriable
 				{
 					if ( heldBody.IsValid() )
 					{
-						UpdateGrab( eyePos, eyeRot, eyeDir, wantsToFreeze );
+						UpdateGrab( EyePosition, EyeRotation, eyeDir, wantsToFreeze );
 					}
 					else
 					{
-						TryStartGrab( owner, eyePos, eyeRot, eyeDir );
+						TryStartGrab( owner, EyePosition, EyeRotation, eyeDir );
 					}
 				}
 				else if ( grabbing )
@@ -98,7 +98,7 @@ public partial class PhysGun : Carriable
 
 				if ( !grabbing && Input.Pressed( InputButton.Reload ) )
 				{
-					TryUnfreezeAll( owner, eyePos, eyeRot, eyeDir );
+					TryUnfreezeAll( owner, EyePosition, EyeRotation, eyeDir );
 				}
 			}
 		}
@@ -118,9 +118,9 @@ public partial class PhysGun : Carriable
 		return false;
 	}
 
-	private void TryUnfreezeAll( Player owner, Vector3 eyePos, Rotation eyeRot, Vector3 eyeDir )
+	private void TryUnfreezeAll( Player owner, Vector3 EyePosition, Rotation EyeRotation, Vector3 eyeDir )
 	{
-		var tr = Trace.Ray( eyePos, eyePos + eyeDir * MaxTargetDistance )
+		var tr = Trace.Ray( EyePosition, EyePosition + eyeDir * MaxTargetDistance )
 			.UseHitboxes()
 			.Ignore( owner, false )
 			.HitLayer( CollisionLayer.Debris )
@@ -155,9 +155,9 @@ public partial class PhysGun : Carriable
 		}
 	}
 
-	private void TryStartGrab( Player owner, Vector3 eyePos, Rotation eyeRot, Vector3 eyeDir )
+	private void TryStartGrab( Player owner, Vector3 EyePosition, Rotation EyeRotation, Vector3 eyeDir )
 	{
-		var tr = Trace.Ray( eyePos, eyePos + eyeDir * MaxTargetDistance )
+		var tr = Trace.Ray( EyePosition, EyePosition + eyeDir * MaxTargetDistance )
 			.UseHitboxes()
 			.Ignore( owner, false )
 			.HitLayer( CollisionLayer.Debris )
@@ -194,7 +194,7 @@ public partial class PhysGun : Carriable
 		if ( IsBodyGrabbed( body ) )
 			return;
 
-		GrabInit( body, eyePos, tr.EndPos, eyeRot );
+		GrabInit( body, EyePosition, tr.EndPos, EyeRotation );
 
 		GrabbedEntity = rootEnt;
 		GrabbedPos = body.Transform.PointToLocal( tr.EndPos );
@@ -203,7 +203,7 @@ public partial class PhysGun : Carriable
 		Client?.Pvs.Add( GrabbedEntity );
 	}
 
-	private void UpdateGrab( Vector3 eyePos, Rotation eyeRot, Vector3 eyeDir, bool wantsToFreeze )
+	private void UpdateGrab( Vector3 EyePosition, Rotation EyeRotation, Vector3 eyeDir, bool wantsToFreeze )
 	{
 		if ( wantsToFreeze )
 		{
@@ -230,7 +230,7 @@ public partial class PhysGun : Carriable
 		if ( rotating )
 		{
 			EnableAngularSpring( Input.Down( InputButton.Run ) ? 100.0f : 0.0f );
-			DoRotate( eyeRot, Input.MouseDelta * RotateSpeed );
+			DoRotate( EyeRotation, Input.MouseDelta * RotateSpeed );
 
 			snapping = Input.Down( InputButton.Run );
 		}
@@ -239,7 +239,7 @@ public partial class PhysGun : Carriable
 			DisableAngularSpring();
 		}
 
-		GrabMove( eyePos, eyeDir, eyeRot, snapping );
+		GrabMove( EyePosition, eyeDir, EyeRotation, snapping );
 	}
 
 	private void EnableAngularSpring( float scale )
