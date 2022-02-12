@@ -20,7 +20,7 @@ namespace Sandbox.Tools
 
 		public override void Simulate()
 		{
-			if ( Parent.ViewModelEntity is ModelEntity ent )
+			if ( Parent?.ViewModelEntity is ModelEntity ent )
 				ent.EnableDrawing = false;
 
 			base.Simulate();
@@ -28,7 +28,7 @@ namespace Sandbox.Tools
 
 		public override void Deactivate()
 		{
-			if( Parent.ViewModelEntity is ModelEntity ent )
+			if( Parent?.ViewModelEntity is ModelEntity ent )
 				ent.EnableDrawing = true;
 
 			base.Deactivate();
