@@ -153,6 +153,9 @@ partial class SandboxPlayer : Player
 	{
 		base.Simulate( cl );
 
+		if ( IsLocalPawn )
+			EnableDrawing = !(GetActiveCamera() is FirstPersonCamera && InCameraTool);
+
 		if ( Input.ActiveChild != null )
 		{
 			ActiveChild = Input.ActiveChild;
