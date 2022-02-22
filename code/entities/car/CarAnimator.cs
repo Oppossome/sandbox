@@ -5,10 +5,11 @@ namespace Sandbox
 	{
 		public override void Simulate()
 		{
-			ResetParams();
+			ResetParameters();
 
-			SetParam( "b_grounded", true );
-			SetParam( "b_sit", true );
+
+			SetAnimParameter( "b_grounded", true );
+			SetAnimParameter( "b_sit", true );
 
 			var eyeAngles = (Pawn.Rotation.Inverse * Pawn.EyeRotation).Angles();
 			eyeAngles.pitch = eyeAngles.pitch.Clamp( -25, 70 );
@@ -20,15 +21,16 @@ namespace Sandbox
 			SetLookAt( "aim_head", aimPos );
 			SetLookAt( "aim_body", aimPos );
 
-			if ( Pawn.ActiveChild is BaseCarriable carry )
+			// TODO: RE-EVAL
+			/*if ( Pawn.ActiveChild is BaseCarriable carry )
 			{
 				carry.SimulateAnimator( this );
 			}
 			else
 			{
-				SetParam( "holdtype", 0 );
-				SetParam( "aim_body_weight", 0.5f );
-			}
+				SetAnimParameter( "holdtype", 0 );
+				SetAnimParameter( "aim_body_weight", 0.5f );
+			}*/
 		}
 	}
 }

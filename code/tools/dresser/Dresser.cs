@@ -31,7 +31,7 @@ public partial class Dresser : BaseTool
 		if ( !tr.Hit || tr.Entity is Player || tr.Entity is not ModelEntity ent || ent.Model.Name != "models/citizen/citizen.vmdl" )
 			return;
 
-		CreateHitEffects( tr.EndPos );
+		CreateHitEffects( tr.EndPosition );
 		ApplyClothing( ent );
 	}
 

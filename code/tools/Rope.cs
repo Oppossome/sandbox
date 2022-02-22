@@ -41,10 +41,10 @@
 				{
 					targetBody = tr.Body;
 					targetBone = tr.Bone;
-					globalOrigin1 = tr.EndPos;
+					globalOrigin1 = tr.EndPosition;
 					localOrigin1 = tr.Body.Transform.PointToLocal( globalOrigin1 );
 
-					CreateHitEffects( tr.EndPos );
+					CreateHitEffects( tr.EndPosition );
 
 					return;
 				}
@@ -54,16 +54,16 @@
 
 				var rope = Particles.Create( "particles/rope.vpcf" );
 
-				if ( targetBody.Entity.IsWorld )
+				if ( targetBody.GetEntity().IsWorld )
 				{
 					rope.SetPosition( 0, localOrigin1 );
 				}
 				else
 				{
-					rope.SetEntityBone( 0, targetBody.Entity, targetBone, new Transform( localOrigin1 * (1.0f / targetBody.Entity.Scale) ) );
+					rope.SetEntityBone( 0, targetBody.GetEntity(), targetBone, new Transform( localOrigin1 * (1.0f / targetBody.GetEntity().Scale) ) );
 				}
 
-				var localOrigin2 = tr.Body.Transform.PointToLocal( tr.EndPos );
+				var localOrigin2 = tr.Body.Transform.PointToLocal( tr.EndPosition );
 
 				if ( tr.Entity.IsWorld )
 				{
@@ -71,28 +71,34 @@
 				}
 				else
 				{
-					rope.SetEntityBone( 1, tr.Body.Entity, tr.Bone, new Transform( localOrigin2 * (1.0f / tr.Entity.Scale) ) );
+					rope.SetEntityBone( 1, tr.Body.GetEntity(), tr.Bone, new Transform( localOrigin2 * (1.0f / tr.Entity.Scale) ) );
 				}
 
-				var spring = PhysicsJoint.Spring
+				var spring = PhysicsJoint.CreateLength( targetBody.LocalPoint(localOrigin1), tr.Body.LocalPoint(localOrigin2), tr.EndPosition.Distance( globalOrigin1 ) );
+				spring.SpringLinear = new PhysicsSpring( 5.0f, 0.7f );
+				spring.EnableAngularConstraint = false;
+				spring.Collisions = true;
+				spring.MinLength = 0;
+
+
+				/*var spring = PhysicsJoint.Spring
 					.From( targetBody, localOrigin1 )
 					.To( tr.Body, localOrigin2 )
 					.WithFrequency( 5.0f )
 					.WithDampingRatio( 0.7f )
 					.WithReferenceMass( targetBody.Mass )
 					.WithMinRestLength( 0 )
-					.WithMaxRestLength( tr.EndPos.Distance( globalOrigin1 ) )
+					.WithMaxRestLength(  )
 					.WithCollisionsEnabled()
-					.Create();
+					.Create(); */
 
-				spring.EnableAngularConstraint = false;
-				spring.OnBreak( () =>
+				spring.OnBreak += () =>
 				{
 					rope?.Destroy( true );
 					spring.Remove();
-				} );
+				};
 
-				CreateHitEffects( tr.EndPos );
+				CreateHitEffects( tr.EndPosition );
 
 				Reset();
 			}

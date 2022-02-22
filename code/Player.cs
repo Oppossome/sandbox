@@ -10,12 +10,12 @@ partial class SandboxPlayer : Player
 
 	[Net] public PawnController VehicleController { get; set; }
 	[Net] public PawnAnimator VehicleAnimator { get; set; }
-	[Net, Predicted] public ICamera VehicleCamera { get; set; }
+	[Net, Predicted] public CameraMode VehicleCamera { get; set; }
 	[Net, Predicted] public Entity Vehicle { get; set; }
-	[Net, Predicted] public ICamera MainCamera { get; set; }
+	[Net, Predicted] public CameraMode MainCamera { get; set; }
 
 	public bool InCameraTool => (Inventory.Active is Tool tool && tool.CurrentTool is CameraTool); 
-	public ICamera LastCamera { get; set; }
+	public CameraMode LastCamera { get; set; }
 
 
 	/// <summary>
@@ -142,7 +142,7 @@ partial class SandboxPlayer : Player
 		return base.GetActiveAnimator();
 	}
 
-	public ICamera GetActiveCamera()
+	public CameraMode GetActiveCamera()
 	{
 		if ( VehicleCamera != null ) return VehicleCamera;
 
@@ -152,6 +152,9 @@ partial class SandboxPlayer : Player
 	public override void Simulate( Client cl )
 	{
 		base.Simulate( cl );
+		
+		if( MainCamera != null )
+			CameraMode = GetActiveCamera();
 
 		if ( IsLocalPawn )
 			EnableDrawing = !(GetActiveCamera() is FirstPersonCamera && InCameraTool);
@@ -177,16 +180,7 @@ partial class SandboxPlayer : Player
 		SimulateActiveChild( cl, ActiveChild );
 
 		if ( Input.Pressed( InputButton.View ) )
-		{
-			if ( MainCamera is not FirstPersonCamera )
-			{
-				MainCamera = new FirstPersonCamera();
-			}
-			else
-			{
-				MainCamera = new ThirdPersonCamera();
-			}
-		}
+			MainCamera = MainCamera is FirstPersonCamera ? new ThirdPersonCamera() : new FirstPersonCamera();
 
 
 		if ( Input.Pressed( InputButton.Drop ) )
@@ -227,7 +221,7 @@ partial class SandboxPlayer : Player
 	[ServerCmd( "inventory_current" )]
 	public static void SetInventoryCurrent( string entName )
 	{
-		var target = ConsoleSystem.Caller.Pawn;
+		var target = ConsoleSystem.Caller.Pawn as Player;
 		if ( target == null ) return;
 
 		var inventory = target.Inventory;
@@ -248,15 +242,4 @@ partial class SandboxPlayer : Player
 			break;
 		}
 	}
-
-	// TODO
-
-	//public override bool HasPermission( string mode )
-	//{
-	//	if ( mode == "noclip" ) return true;
-	//	if ( mode == "devcam" ) return true;
-	//	if ( mode == "suicide" ) return true;
-	//
-	//	return base.HasPermission( mode );
-	//	}
 }

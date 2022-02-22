@@ -17,8 +17,9 @@ public class DresserMenu : SettingsPanel
 	Panel RenderContainer { get; set; }
 	SceneWorld World = new();
 	
-	List<AnimSceneObject> Models = new();
-	AnimSceneObject Preview;
+	List<SceneModel> Models = new();
+	SceneWorld SceneWorld;
+	SceneModel Preview;
 
 	public DresserMenu()
 	{
@@ -31,27 +32,17 @@ public class DresserMenu : SettingsPanel
 
 	private void MakePreview()
 	{
-		ScenePanel scenePanel;
+		SceneWorld = new SceneWorld();
 
-		using ( SceneWorld.SetCurrent( World ) )
-		{
-			Preview = new AnimSceneObject( Model.Load("models/citizen/citizen.vmdl"), Transform.Zero );
-			Preview.SetAnimInt( "idle_states", 0 );
+		Preview = new( SceneWorld, Model.Load( "models/citizen/citizen.vmdl" ), Transform.Zero );
+		Preview.SetAnimParameter( "idle_states", 0 );
 
-			scenePanel = RenderContainer.Add.ScenePanel( SceneWorld.Current, new Vector3( 125, 0, 34 ), Rotation.FromYaw( 180 ), 40, "renderview" );
-			scenePanel.AmbientColor = Color.White * 1;
-		}
+		ScenePanel scenePanel = RenderContainer.Add.ScenePanel( SceneWorld, new Vector3( 125, 0, 34 ), Rotation.FromYaw( 180 ), 40, "renderview" );
+		scenePanel.AmbientColor = Color.White * 1;
 
 		bool isHolding = false;
-		scenePanel.AddEventListener( "onmouseup", () =>
-		{
-			isHolding = false;
-		} );
-
-		scenePanel.AddEventListener( "onmousedown", () =>
-		{
-			isHolding = true;
-		} );
+		scenePanel.AddEventListener( "onmouseup", () => isHolding = false );
+		scenePanel.AddEventListener( "onmousedown", () => isHolding = true );
 
 		float rot = 180;
 		float yAdjust = 0;
@@ -86,18 +77,15 @@ public class DresserMenu : SettingsPanel
 		var currentClothes = Models.Select( x => x.Model.Name );
 		var toMake = ClothingSelection.Models.Except( currentClothes );
 
-		using( SceneWorld.SetCurrent( World ) )
+		foreach ( var model in toMake )
 		{
-			foreach( var model in toMake)
-			{
-				var newObj = new AnimSceneObject( Model.Load( model ), Preview.Transform );
-				Preview.AddChild( "clothing", newObj );
-				Models.Add( newObj );
-			}
+			var newObj = new SceneModel( SceneWorld,  model , Preview.Transform );
+			Preview.AddChild( "clothing", newObj );
+			Models.Add( newObj );
 		}
 
 		Preview.Update( Time.Delta );
-		foreach ( AnimSceneObject mdl in Models )
+		foreach ( SceneModel mdl in Models )
 			mdl.Update( Time.Delta );
 	}
 

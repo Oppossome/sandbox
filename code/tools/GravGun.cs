@@ -1,5 +1,4 @@
 ﻿using Sandbox;
-using Sandbox.Joints;
 using System;
 using System.Linq;
 
@@ -9,8 +8,7 @@ public partial class GravGun : Carriable
 	public override string ViewModelPath => "weapons/rust_pistol/v_rust_pistol.vmdl";
 
 	private PhysicsBody holdBody;
-	private WeldJoint holdJoint;
-	private GenericJoint collisionJoint;
+	private FixedJoint holdJoint;
 
 	public PhysicsBody HeldBody { get; private set; }
 	public Rotation HeldRot { get; private set; }
@@ -51,13 +49,13 @@ public partial class GravGun : Carriable
 
 		using ( Prediction.Off() )
 		{
-			var EyePosition = owner.EyePosition;
-			var EyeRotation = owner.EyeRotation;
+			var eyePos = owner.EyePosition;
+			var eyeRot = owner.EyeRotation;
 			var eyeDir = owner.EyeRotation.Forward;
 
 			if ( HeldBody.IsValid() && HeldBody.PhysicsGroup != null )
 			{
-				if ( holdJoint.IsValid && !holdJoint.IsActive )
+				if ( holdJoint.IsValid() && !holdJoint.IsActive )
 				{
 					GrabEnd();
 				}
@@ -85,7 +83,7 @@ public partial class GravGun : Carriable
 				}
 				else
 				{
-					GrabMove( EyePosition, eyeDir, EyeRotation );
+					GrabMove( eyePos, eyeDir, eyeRot );
 				}
 
 				return;
@@ -94,7 +92,7 @@ public partial class GravGun : Carriable
 			if ( timeSinceDrop < DropCooldown )
 				return;
 
-			var tr = Trace.Ray( EyePosition, EyePosition + eyeDir * MaxPullDistance )
+			var tr = Trace.Ray( eyePos, eyePos + eyeDir * MaxPullDistance )
 				.UseHitboxes()
 				.Ignore( owner, false )
 				.Radius( 2.0f )
@@ -118,7 +116,7 @@ public partial class GravGun : Carriable
 				if ( tr.Distance < MaxPushDistance && !IsBodyGrabbed( body ) )
 				{
 					var pushScale = 1.0f - Math.Clamp( tr.Distance / MaxPushDistance, 0.0f, 1.0f );
-					body.ApplyImpulseAt( tr.EndPos, eyeDir * (body.Mass * (PushForce * pushScale)) );
+					body.ApplyImpulseAt( tr.EndPosition, eyeDir * (body.Mass * (PushForce * pushScale)) );
 				}
 			}
 			else if ( Input.Down( InputButton.Attack2 ) )
@@ -132,12 +130,12 @@ public partial class GravGun : Carriable
 						return;
 				}
 
-				var attachPos = body.FindClosestPoint( EyePosition );
+				var attachPos = body.FindClosestPoint( eyePos );
 
-				if ( EyePosition.Distance( attachPos ) <= AttachDistance )
+				if ( eyePos.Distance( attachPos ) <= AttachDistance )
 				{
 					var holdDistance = HoldDistance + attachPos.Distance( body.MassCenter );
-					GrabStart( modelEnt, body, EyePosition + eyeDir * holdDistance, EyeRotation );
+					GrabStart( modelEnt, body, eyePos + eyeDir * holdDistance, eyeRot );
 				}
 				else if ( !IsBodyGrabbed( body ) )
 				{
@@ -151,7 +149,7 @@ public partial class GravGun : Carriable
 	{
 		if ( !holdBody.IsValid() )
 		{
-			holdBody = new PhysicsBody
+			holdBody = new PhysicsBody( Map.Physics )
 			{
 				BodyType = PhysicsBodyType.Keyframed
 			};
@@ -228,21 +226,13 @@ public partial class GravGun : Carriable
 		holdBody.Position = grabPos;
 		holdBody.Rotation = HeldBody.Rotation;
 
-		HeldBody.Wake();
-		HeldBody.EnableAutoSleeping = false;
+		HeldBody.Sleeping = false;
+		HeldBody.AutoSleep = false;
 
-		collisionJoint = PhysicsJoint.Generic
-			.From( (Owner as Player).PhysicsBody )
-			.To( HeldBody )
-			.Create();
-
-		holdJoint = PhysicsJoint.Weld
-			.From( holdBody )
-			.To( HeldBody, HeldBody.LocalMassCenter )
-			.WithLinearSpring( LinearFrequency, LinearDampingRatio, 0.0f )
-			.WithAngularSpring( AngularFrequency, AngularDampingRatio, 0.0f )
-			.Breakable( HeldBody.Mass * BreakLinearForce, 0 )
-			.Create();
+		holdJoint = PhysicsJoint.CreateFixed( holdBody, HeldBody.MassCenterPoint() );
+		holdJoint.SpringLinear = new( LinearFrequency, LinearDampingRatio );
+		holdJoint.SpringAngular = new( AngularFrequency, AngularDampingRatio );
+		holdJoint.Strength = HeldBody.Mass * BreakLinearForce;
 
 		HeldEntity = entity;
 
@@ -251,19 +241,12 @@ public partial class GravGun : Carriable
 
 	private void GrabEnd()
 	{
-		if ( holdJoint.IsValid )
-		{
-			holdJoint.Remove();
-		}
-
-		if ( collisionJoint.IsValid )
-		{
-			collisionJoint.Remove();
-		}
+		holdJoint?.Remove();
+		holdJoint = null;
 
 		if ( HeldBody.IsValid() )
 		{
-			HeldBody.EnableAutoSleeping = true;
+			HeldBody.AutoSleep = true;
 		}
 
 		if ( HeldEntity.IsValid() )

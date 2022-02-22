@@ -60,7 +60,7 @@ namespace Sandbox.Tools
 				if ( !tr.Hit || !tr.Entity.IsValid() )
 					return;
 
-				CreateHitEffects( tr.EndPos );
+				CreateHitEffects( tr.EndPosition );
 
 				if ( tr.Entity is LightEntity )
 				{
@@ -85,7 +85,7 @@ namespace Sandbox.Tools
 				light.UseFogNoShadows();
 				light.SetModel( Model );
 				light.SetupPhysicsFromModel( PhysicsMotionType.Dynamic, false );
-				light.Position = tr.EndPos + -light.CollisionBounds.Center + tr.Normal * light.CollisionBounds.Size * 0.5f;
+				light.Position = tr.EndPosition + -light.CollisionBounds.Center + tr.Normal * light.CollisionBounds.Size * 0.5f;
 				UndoHandler.Register( Owner, light );
 
 				if ( !useRope )
@@ -94,8 +94,8 @@ namespace Sandbox.Tools
 				var rope = Particles.Create( "particles/rope.vpcf" );
 				rope.SetEntity( 0, light, Vector3.Down * 6.5f ); // Should be an attachment point
 
-				var attachEnt = tr.Body.IsValid() ? tr.Body.Entity : tr.Entity;
-				var attachLocalPos = tr.Body.Transform.PointToLocal( tr.EndPos ) * (1.0f / tr.Entity.Scale);
+				var attachEnt = tr.Body.IsValid() ? tr.Body.GetEntity() : tr.Entity;
+				var attachLocalPos = tr.Body.Transform.PointToLocal( tr.EndPosition ) * (1.0f / tr.Entity.Scale);
 
 				if ( attachEnt.IsWorld )
 				{
@@ -106,23 +106,15 @@ namespace Sandbox.Tools
 					rope.SetEntityBone( 1, attachEnt, tr.Bone, new Transform( attachLocalPos ) );
 				}
 
-				var spring = PhysicsJoint.Spring
-					.From( light.PhysicsBody, Vector3.Down * 6.5f )
-					.To( tr.Body, tr.Body.Transform.PointToLocal( tr.EndPos ) )
-					.WithFrequency( 5.0f )
-					.WithDampingRatio( 0.7f )
-					.WithReferenceMass( light.PhysicsBody.Mass )
-					.WithMinRestLength( 0 )
-					.WithMaxRestLength( RopeLength )
-					.WithCollisionsEnabled()
-					.Create();
-
+				var spring = PhysicsJoint.CreateLength( light.PhysicsBody.LocalPoint( Vector3.Down * 6.5f), tr.Body.WorldPoint( tr.EndPosition ), RopeLength );
+				spring.SpringLinear = new PhysicsSpring( 5.0f, 0.7f );
 				spring.EnableAngularConstraint = false;
-				spring.OnBreak( () =>
-				{
+				spring.Collisions = true;
+
+				spring.OnBreak += () => {
 					rope?.Destroy( true );
 					spring.Remove();
-				} );
+				};
 			}
 		}
 

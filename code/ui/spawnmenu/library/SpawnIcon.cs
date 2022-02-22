@@ -52,13 +52,13 @@ public class SpawnIcon : Panel
 		Rotation camRot = Rotation.LookAt( - camNormal );
 
 
-		using (SceneWorld.SetCurrent( new SceneWorld() ) )
-		{
-			SceneObject.CreateModel( modelPath, Transform.Zero );
-			scenePanel = IconPanel.Add.ScenePanel( SceneWorld.Current, camPos, camRot, 90, "renderedCam" );
-			scenePanel.AmbientColor = Color.White * 1;
-			scenePanel.RenderOnce = true;
-		}
+		SceneWorld scene = new SceneWorld();
+		new SceneModel( scene, modelPath, Transform.Zero );
+
+		ScenePanel scenePanel = IconPanel.Add.ScenePanel( scene, camPos, camRot, 90, "renderedCam" );
+		scenePanel.AmbientColor = Color.White * 1;
+		scenePanel.RenderOnce = true;
+
 
 		IconPanel.AddClass( "noicon" );
 		return this;

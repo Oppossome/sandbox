@@ -37,7 +37,7 @@ namespace Sandbox.Tools
 
 				modelEnt.RenderColor = Color;
 
-				CreateHitEffects( tr.EndPos );
+				CreateHitEffects( tr.EndPosition );
 			}
 		}
 

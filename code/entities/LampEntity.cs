@@ -27,7 +27,7 @@ public partial class LampEntity : SpotLightEntity, IUse
 
 	public void Remove()
 	{
-		PhysicsGroup?.Wake();
+		PhysicsGroup.Sleeping = false;
 		Delete();
 	}
 }

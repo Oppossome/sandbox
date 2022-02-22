@@ -44,7 +44,7 @@ namespace Sandbox.Tools
 				{
 					entity.Scale = scale;
 					entity.PhysicsGroup.RebuildMass();
-					entity.PhysicsGroup.Wake();
+					entity.PhysicsGroup.Sleeping = false;
 
 					foreach ( var child in entity.Children )
 					{
@@ -55,13 +55,13 @@ namespace Sandbox.Tools
 							continue;
 
 						child.PhysicsGroup.RebuildMass();
-						child.PhysicsGroup.Wake();
+						child.PhysicsGroup.Sleeping = false;
 					}
 				}
 
 				if ( Input.Pressed( InputButton.Attack1 ) || Input.Pressed( InputButton.Attack2 ) || reset )
 				{
-					CreateHitEffects( tr.EndPos );
+					CreateHitEffects( tr.EndPosition );
 				}
 			}
 		}

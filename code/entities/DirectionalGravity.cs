@@ -1,5 +1,6 @@
 ﻿using Sandbox;
 using System.Linq;
+using System.Collections.Generic;
 
 [Library( "directional_gravity", Title = "Directional Gravity", Spawnable = true )]
 public partial class DirectionalGravity : Prop
@@ -34,8 +35,11 @@ public partial class DirectionalGravity : Prop
 
 		if ( IsServer )
 		{
-			PhysicsWorld.UseDefaultGravity();
-			PhysicsWorld.WakeAllBodies();
+			Map.Physics.Gravity = Vector3.Down * 800f;
+			Entity.All.OfType<PhysicsBody>().ToList().ForEach( x =>
+			{
+				x.Sleeping = false;
+			} );
 		}
 
 		enabled = false;
@@ -54,11 +58,14 @@ public partial class DirectionalGravity : Prop
 			return;
 
 		var gravity = Rotation.Down * 800.0f;
-
-		if ( gravity != PhysicsWorld.Gravity )
+		if ( gravity != Map.Physics.Gravity )
 		{
-			PhysicsWorld.Gravity = gravity;
-			PhysicsWorld.WakeAllBodies();
+			Map.Physics.Gravity = gravity;
+			
+			Entity.All.OfType<PhysicsBody>().ToList().ForEach( x =>
+			{
+				x.Sleeping = false;
+			} );
 		}
 	}
 }

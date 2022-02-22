@@ -20,8 +20,7 @@ public class InventoryBar : Panel
 	{
 		base.Tick();
 
-		var player = Local.Pawn;
-		if ( player == null ) return;
+		if ( Local.Pawn is not Player player ) return;
 		if ( player.Inventory is not Inventory inv ) return;
 
 		if ( !wasAlive && player.LifeState == LifeState.Alive )
@@ -41,9 +40,11 @@ public class InventoryBar : Panel
 			return;
 		}
 
+		if ( Local.Pawn is not Player player ) return;
+
 		inventoryIcon.TargetEnt = ent;
 		inventoryIcon.Label.Text = ent.ClassInfo.Title;
-		inventoryIcon.SetClass( "active", ent.IsActiveChild() );
+		inventoryIcon.SetClass( "active", player.ActiveChild == ent );
 	}
 
 	[Event( "buildinput" )]
@@ -77,9 +78,7 @@ public class InventoryBar : Panel
 
 	private static void SetActiveSlot( InputBuilder input, IBaseInventory inventory, int i )
 	{
-		var player = Local.Pawn;
-		if ( player == null )
-			return;
+		if ( Local.Pawn is not Player player ) return;
 
 		var ent = inventory.GetSlot( i );
 		if ( player.ActiveChild == ent )

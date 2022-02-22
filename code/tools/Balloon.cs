@@ -65,7 +65,7 @@ namespace Sandbox.Tools
 				if ( !tr.Entity.IsValid() )
 					return;
 
-				CreateHitEffects( tr.EndPos );
+				CreateHitEffects( tr.EndPosition );
 
 				if ( tr.Entity is BalloonEntity )
 					return;
@@ -73,7 +73,7 @@ namespace Sandbox.Tools
 				var ent = new BalloonEntity
 				{
 					GravityScale = -BalloonForce / 50,
-					Position = tr.EndPos,
+					Position = tr.EndPosition,
 				};
 
 				ent.SetModel( BalloonModel );
@@ -87,8 +87,8 @@ namespace Sandbox.Tools
 				var rope = Particles.Create( "particles/rope.vpcf" );
 				rope.SetEntity( 0, ent );
 
-				var attachEnt = tr.Body.IsValid() ? tr.Body.Entity : tr.Entity;
-				var attachLocalPos = tr.Body.Transform.PointToLocal( tr.EndPos ) * (1.0f / tr.Entity.Scale);
+				var attachEnt = tr.Body.IsValid() ? tr.Body.GetEntity() : tr.Entity;
+				var attachLocalPos = tr.Body.Transform.PointToLocal( tr.EndPosition ) * (1.0f / tr.Entity.Scale);
 
 				if ( attachEnt.IsWorld )
 				{
@@ -99,23 +99,28 @@ namespace Sandbox.Tools
 					rope.SetEntityBone( 1, attachEnt, tr.Bone, new Transform( attachLocalPos ) );
 				}
 
-				var spring = PhysicsJoint.Spring
+				var spring = PhysicsJoint.CreateLength( ent.PhysicsBody, tr.Body.WorldPoint( tr.EndPosition ), RopeLength );
+				spring.SpringLinear = new PhysicsSpring( 5.0f, 0.7f );
+				spring.EnableAngularConstraint = false;
+				spring.Collisions = true;
+
+
+				/*var spring = PhysicsJoint.Spring
 					.From( ent.PhysicsBody )
-					.To( tr.Body, tr.Body.Transform.PointToLocal( tr.EndPos ) )
+					.To( tr.Body, tr.Body.Transform.PointToLocal( tr.EndPosition ) )
 					.WithFrequency( 5.0f )
 					.WithDampingRatio( 0.7f )
 					.WithReferenceMass( ent.PhysicsBody.Mass )
 					.WithMinRestLength( 0 )
 					.WithMaxRestLength( RopeLength )
 					.WithCollisionsEnabled()
-					.Create();
+					.Create(); */
 
-				spring.EnableAngularConstraint = false;
-				spring.OnBreak( () =>
+				spring.OnBreak += () =>
 				{
 					rope?.Destroy( true );
 					spring.Remove();
-				} );
+				};
 			}
 		}
 

@@ -47,10 +47,10 @@ partial class SandboxGame : Game
 			.Run();
 
 		var ent = new Prop();
-		ent.Position = tr.EndPos;
+		ent.Position = tr.EndPosition;
 		ent.Rotation = Rotation.From( new Angles( 0, owner.EyeRotation.Angles().yaw, 0 ) ) * Rotation.FromAxis( Vector3.Up, 180 );
 		ent.SetModel( modelname );
-		ent.Position = tr.EndPos - Vector3.Up * ent.CollisionBounds.Mins.z;
+		ent.Position = tr.EndPosition - Vector3.Up * ent.CollisionBounds.Mins.z;
 
 		if(modelname == "models/citizen/citizen.vmdl" && ownerTool.CurrentTool is Dresser dresser )
 			dresser.ApplyClothing(ent);
@@ -61,10 +61,8 @@ partial class SandboxGame : Game
 	[ServerCmd( "spawn_entity" )]
 	public static void SpawnEntity( string entName )
 	{
-		var owner = ConsoleSystem.Caller.Pawn;
-
-		if ( owner == null )
-			return;
+		var clPawn = ConsoleSystem.Caller.Pawn;
+		if ( clPawn is not Player owner ) return;
 
 		var attribute = Library.GetAttribute( entName );
 
@@ -84,19 +82,11 @@ partial class SandboxGame : Game
 				return;
 		}
 
-		ent.Position = tr.EndPos;
+		ent.Position = tr.EndPosition;
 		ent.Rotation = Rotation.From( new Angles( 0, owner.EyeRotation.Angles().yaw, 0 ) );
 		UndoHandler.Register(owner, ent );
 
 		//Log.Info( $"ent: {ent}" );
-	}
-
-	public override ICamera FindActiveCamera()
-	{
-		if ( Local.Client.DevCamera != null ) return Local.Client.DevCamera;
-		if ( Local.Pawn is SandboxPlayer ply ) return ply.GetActiveCamera();
-
-		return null;
 	}
 
 	public override void DoPlayerNoclip( Client player )

@@ -277,7 +277,7 @@ public partial class CarEntity : Prop, IUse
 
 		if ( fullyGrounded )
 		{
-			body.Velocity += PhysicsWorld.Gravity * dt;
+			body.Velocity += Map.Physics.Gravity * dt;
 		}
 
 		body.GravityScale = fullyGrounded ? 0 : 1;
@@ -331,7 +331,7 @@ public partial class CarEntity : Prop, IUse
 				.Run();
 
 			if ( debug_car )
-				DebugOverlay.Line( tr.StartPos, tr.EndPos, tr.Hit ? Color.Red : Color.Green );
+				DebugOverlay.Line( tr.StartPosition, tr.EndPosition, tr.Hit ? Color.Red : Color.Green );
 
 			canAirControl = !tr.Hit;
 		}
@@ -345,7 +345,7 @@ public partial class CarEntity : Prop, IUse
 				.Run();
 
 			if ( debug_car )
-				DebugOverlay.Line( tr.StartPos, tr.EndPos );
+				DebugOverlay.Line( tr.StartPosition, tr.EndPosition );
 
 			bool dampen = false;
 
@@ -520,7 +520,7 @@ public partial class CarEntity : Prop, IUse
 			OnPhysicsCollision( new CollisionEventData
 			{
 				Entity = player,
-				Pos = player.Position + Vector3.Up * 50,
+				Position = player.Position + Vector3.Up * 50,
 				Velocity = velocity,
 				PreVelocity = velocity,
 				PostVelocity = velocity,
@@ -559,7 +559,7 @@ public partial class CarEntity : Prop, IUse
 					.WithFlag( DamageFlags.PhysicsImpact )
 					.WithFlag( DamageFlags.Vehicle )
 					.WithAttacker( driver != null ? driver : this, driver != null ? this : null )
-					.WithPosition( eventData.Pos )
+					.WithPosition( eventData.Position )
 					.WithForce( eventData.PreVelocity ) );
 
 				if ( eventData.Entity.LifeState == LifeState.Dead && eventData.Entity is not SandboxPlayer )
