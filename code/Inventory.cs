@@ -66,8 +66,8 @@ partial class Inventory : BaseInventory
 		if ( !Contains( ent ) )
 			return false;
 
-		//TODO: RE-EVAL
-		(ent as BaseWeapon).OnCarryDrop( Owner );
+		if( ent is BaseCarriable carriable)
+			carriable.OnCarryDrop( Owner );
 
 		return ent.Parent == null;
 	}
