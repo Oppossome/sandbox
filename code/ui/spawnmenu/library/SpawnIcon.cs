@@ -14,7 +14,6 @@ public class SpawnIcon : Panel
 	public Panel InnerPanel { get; set; }
 	public Panel IconPanel { get; set; }
 	public string IconText { get; set; }
-	ScenePanel scenePanel;
 	
 	public SpawnIcon( string iconName )
 	{
