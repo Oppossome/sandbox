@@ -36,9 +36,8 @@ public partial class DirectionalGravity : Prop
 		if ( IsServer )
 		{
 			Map.Physics.Gravity = Vector3.Down * 800f;
-			Entity.All.OfType<PhysicsBody>().ToList().ForEach( x =>
-			{
-				x.Sleeping = false;
+			Entity.All.OfType<ModelEntity>().ToList().ForEach( x => {
+				if ( x.PhysicsBody is not null ) x.PhysicsBody.Sleeping = false;
 			} );
 		}
 
@@ -61,11 +60,9 @@ public partial class DirectionalGravity : Prop
 		if ( gravity != Map.Physics.Gravity )
 		{
 			Map.Physics.Gravity = gravity;
-			
-			Entity.All.OfType<PhysicsBody>().ToList().ForEach( x =>
-			{
-				x.Sleeping = false;
-			} );
+			Entity.All.OfType<ModelEntity>().ToList().ForEach( x => {
+				if ( x.PhysicsBody is not null ) x.PhysicsBody.Sleeping = false;
+			});
 		}
 	}
 }
