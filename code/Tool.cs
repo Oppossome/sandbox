@@ -50,8 +50,8 @@ partial class Tool : Carriable
 
 		if ( CurrentTool != null )
 		{
-			CurrentTool.Parent = this;
 			CurrentTool.Owner = owner.Pawn as Player;
+			CurrentTool.Parent = this;
 			CurrentTool.Activate();
 		}
 	}
@@ -60,7 +60,13 @@ partial class Tool : Carriable
 	{
 		base.ActiveStart( ent );
 
-		CurrentTool?.Activate();
+		if( CurrentTool is not null )
+		{
+			CurrentTool.Owner = Owner as Player;
+			CurrentTool.Parent = this;
+			CurrentTool.Activate();
+		}
+
 	}
 
 	public override void ActiveEnd( Entity ent, bool dropped )
