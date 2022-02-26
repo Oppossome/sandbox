@@ -58,6 +58,10 @@ public class ToolsMenu : TabSplit
 			catSplit.Register( "Undo All" ).WithCallback( () =>
 				ConsoleSystem.Run( "undo", -1 ), true );
 
+			if( Local.Client.IsListenServerHost )
+				catSplit.Register( "Undo Everyone" ).WithCallback( () =>
+					ConsoleSystem.Run( "undo_everyone" ), true );
+
 			return catSplit;
 		} );
 	}

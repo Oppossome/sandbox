@@ -97,13 +97,13 @@ public static class UndoHandler
 		Notifications.SendUndo( To.Single( cl ), undone );
 	}
 
-	[AdminCmd("undo_everyone")]
+	[ServerCmd("undo_everyone")]
 	public static void UndoEveryoneCMD()
 	{
-		if ( ConsoleSystem.Caller is not Client cl )
+		if ( ConsoleSystem.Caller is not Client cl || !cl.IsListenServerHost )
 			return;
 
-		Notifications.Send( To.Single( cl ), $"All ents undone", 2 );
+		Notifications.Send( To.Single( cl ), $"Everyone's entites undone", 2 );
 
 		foreach ( long id in Props.Keys )
 			DoUndo( id, -1 );
